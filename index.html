@@ -3,1205 +3,2272 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>灰燈寨 第一章 DEMO — 完整遊戲流程圖</title>
+<title>灰燈寨 GRAYLIGHT WALLED — Chapter 1 DEMO 遊戲設計文件</title>
 <style>
 :root {
-  --bg: #0e0e0e;
-  --card: #1a1a1a;
-  --card-hover: #222;
-  --border: #333;
-  --text: #e0ddd5;
-  --text-dim: #8a8780;
-  --accent: #d4a017;
-  --brass: #c8a84e;
-  --rust: #b85c38;
-  --steam: #5ba3c9;
-  --diesel: #d85a30;
-  --green: #5dca6a;
-  --purple: #9b8ec4;
-  --pink: #d4537e;
-  --red: #e24b4a;
-  --phase1: #6b6b63;
-  --phase2: #378add;
-  --phase3: #d4537e;
-  --phase4: #d85a30;
-  --phase5: #7f77dd;
-  --line: #444;
+  --bg: #0a0a0a;
+  --card: #111111;
+  --card-hover: #151515;
+  --border: #222222;
+  --border-light: #333333;
+  --text: #e0e0e0;
+  --text-dim: #888888;
+  --text-muted: #555555;
+  --accent-gold: #c5a258;
+  --accent-brass: #b08d57;
+  --accent-rust: #a0522d;
+  --accent-steam: #6eb5d0;
+  --role-art: #4a90c7;
+  --role-prog: #4caf50;
+  --role-audio: #9c64d6;
+  --role-plan: #e6913e;
+  --role-art-bg: rgba(74,144,199,0.08);
+  --role-prog-bg: rgba(76,175,80,0.08);
+  --role-audio-bg: rgba(156,100,214,0.08);
+  --role-plan-bg: rgba(230,145,62,0.08);
+  --font-main: 'Segoe UI', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  --radius: 8px;
+  --transition: 0.3s ease;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; padding: 20px; }
-h1 { text-align: center; font-size: 28px; color: var(--accent); margin: 20px 0 5px; letter-spacing: 4px; }
-.subtitle { text-align: center; font-size: 13px; color: var(--text-dim); margin-bottom: 30px; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 30px; padding: 12px; background: var(--card); border-radius: 8px; border: 1px solid var(--border); }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-dim); }
-.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.role-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
-.role-tab { padding: 6px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-dim); transition: all .2s; }
-.role-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-.phase { margin-bottom: 32px; position: relative; }
-.phase::before { content: ''; position: absolute; left: 28px; top: 60px; bottom: 0; width: 2px; background: var(--line); }
-.phase-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--card); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px; position: relative; z-index: 1; }
-.phase-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
-.phase-info { flex: 1; }
-.phase-title { font-size: 17px; font-weight: 600; }
-.phase-meta { font-size: 12px; color: var(--text-dim); }
-.nodes { padding-left: 16px; }
-.node { position: relative; margin-bottom: 8px; padding-left: 28px; }
-.node::before { content: ''; position: absolute; left: 22px; top: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); z-index: 1; }
-.node.puzzle::before { border-color: var(--green); background: #1a2e1a; }
-.node.climax::before { border-color: var(--accent); background: #2a2210; }
-.node.horror::before { border-color: var(--red); background: #2a1010; }
-.node.choice::before { border-color: var(--pink); background: #2a1520; }
-.node-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .2s; overflow: hidden; }
-.node-card:hover { background: var(--card-hover); border-color: #555; }
-.node-card.open { border-color: var(--accent); }
-.node-head { padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px; }
-.node-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-.node-title { font-size: 14px; font-weight: 600; flex: 1; }
-.node-time { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
-.node-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
-.tag { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 500; }
-.tag-play { background: #1a2a3a; color: #85b7eb; }
-.tag-puzzle { background: #1a2e1a; color: #97c459; }
-.tag-sense { background: #1e1a30; color: #afa9ec; }
-.tag-story { background: #2a1a10; color: #f0997b; }
-.tag-horror { background: #2a1010; color: #f09595; }
-.tag-event { background: #2a2210; color: #fac775; }
-.tag-move { background: #0a2a20; color: #5dcaa5; }
-.tag-choice { background: #2a1520; color: #ed93b1; }
-.node-body { display: none; border-top: 1px solid var(--border); padding: 12px 14px; font-size: 13px; }
-.node-card.open .node-body { display: block; }
-.section { margin-bottom: 12px; }
-.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
-.st-env { background: #1a2a3a; color: #85b7eb; }
-.st-play { background: #1a2e1a; color: #97c459; }
-.st-audio { background: #2a1a30; color: #c9a0dc; }
-.st-haptic { background: #2a2210; color: #fac775; }
-.st-dial { background: #2a1520; color: #ed93b1; }
-.st-punk { background: #2a1a10; color: #f0997b; }
-.section p { margin-bottom: 6px; color: var(--text); line-height: 1.7; }
-.section ul { padding-left: 18px; margin-bottom: 6px; }
-.section li { margin-bottom: 3px; color: #c0bdb5; font-size: 12px; line-height: 1.6; }
-.dialogue { margin: 6px 0; padding: 8px 12px; border-left: 3px solid var(--brass); background: #1a1810; border-radius: 0 6px 6px 0; font-size: 13px; }
-.dialogue .speaker { color: var(--brass); font-weight: 600; }
-.dialogue .lang { color: var(--text-dim); font-size: 11px; }
-.branch-box { margin: 8px 0 8px 28px; padding: 10px 14px; border: 1px dashed var(--pink); border-radius: 8px; background: #1a1218; }
-.branch-label { font-size: 12px; font-weight: 600; color: var(--pink); margin-bottom: 6px; }
-.connector { text-align: center; padding: 8px 0; }
-.connector-line { display: inline-block; width: 2px; height: 24px; background: var(--line); }
-.connector-arrow { color: var(--text-dim); font-size: 18px; }
-.role-prog, .role-art, .role-plan { display: block; }
-body.hide-prog .role-prog { display: none; }
-body.hide-art .role-art { display: none; }
-body.hide-plan .role-plan { display: none; }
-.expand-all { text-align: center; margin-bottom: 20px; }
-.expand-all button { padding: 6px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-dim); transition: all .2s; }
-.expand-all button:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Overview & Reference Sections */
-.ref-section { margin-bottom: 32px; }
-.ref-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: var(--card); border-radius: 10px; border: 1px solid var(--border); cursor: pointer; transition: all .2s; }
-.ref-header:hover { border-color: #555; background: var(--card-hover); }
-.ref-header.open { border-color: var(--accent); border-radius: 10px 10px 0 0; }
-.ref-icon { font-size: 20px; }
-.ref-title { font-size: 17px; font-weight: 600; flex: 1; }
-.ref-toggle { color: var(--text-dim); font-size: 14px; }
-.ref-body { display: none; border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 18px 20px; background: var(--card); }
-.ref-header.open + .ref-body { display: block; }
-.ref-body h3 { font-size: 15px; font-weight: 600; color: var(--accent); margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
-.ref-body h3:first-child { margin-top: 0; }
-.ref-body p { font-size: 13px; line-height: 1.7; margin-bottom: 8px; }
-.ref-body ul { padding-left: 18px; margin-bottom: 8px; }
-.ref-body li { font-size: 12px; line-height: 1.6; margin-bottom: 4px; color: #c0bdb5; }
-.ref-body li b { color: var(--text); }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.info-card { background: #111; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
-.info-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-.info-value { font-size: 14px; font-weight: 600; }
+html { scroll-behavior: smooth; font-size: 15px; }
 
-.emo-wave { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 8px 0 16px; }
-.emo-step { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #1a1a1a; border: 1px solid var(--border); color: var(--text-dim); }
-.emo-arrow { color: var(--text-dim); font-size: 10px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.7;
+  min-height: 100vh;
+}
 
-.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
-.data-table th { background: #1a1a1a; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 8px 10px; text-align: left; border-bottom: 2px solid var(--border); }
-.data-table td { padding: 7px 10px; border-bottom: 1px solid #222; color: #c0bdb5; vertical-align: top; }
-.data-table tr:hover td { background: #151515; }
-.data-table .td-label { color: var(--text); font-weight: 600; white-space: nowrap; }
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-brass); }
 
-.teach-curve { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 16px; }
-.teach-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--accent); background: #111; }
-.teach-num { font-size: 13px; font-weight: 700; color: var(--accent); min-width: 20px; }
-.teach-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.teach-desc { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+/* Header */
+.site-header {
+  background: linear-gradient(180deg, #0f0f0f 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+}
+.site-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+.site-header .subtitle {
+  font-size: 1rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.header-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+}
+.header-stats .stat {
+  text-align: center;
+}
+.header-stats .stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+.header-stats .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
-.punk-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 8px 0 16px; }
-.punk-card { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); }
-.punk-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.punk-card p { font-size: 12px; color: #c0bdb5; line-height: 1.6; }
-.punk-steam { border-left: 3px solid var(--brass); }
-.punk-steam h4 { color: var(--brass); }
-.punk-diesel { border-left: 3px solid var(--rust); }
-.punk-diesel h4 { color: var(--rust); }
-.punk-cyber { border-left: 3px solid var(--steam); }
-.punk-cyber h4 { color: var(--steam); }
+/* Layout */
+.main-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 4rem;
+}
+
+/* Side Nav */
+.side-nav {
+  position: fixed;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.side-nav a {
+  display: block;
+  width: 36px; height: 36px;
+  line-height: 36px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: var(--transition);
+  position: relative;
+}
+.side-nav a:hover, .side-nav a.active {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+  background: rgba(197,162,88,0.1);
+}
+.side-nav a .nav-tooltip {
+  display: none;
+  position: absolute;
+  left: 44px;
+  top: 50%; transform: translateY(-50%);
+  background: #1a1a1a;
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  pointer-events: none;
+}
+.side-nav a:hover .nav-tooltip { display: block; }
+
+/* Toggle All Button */
+.toggle-all-bar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 0;
+  margin-bottom: 1rem;
+  text-align: right;
+}
+.toggle-all-btn {
+  background: var(--card);
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-brass);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: var(--font-main);
+  transition: var(--transition);
+}
+.toggle-all-btn:hover {
+  background: rgba(197,162,88,0.15);
+}
+
+/* Scene Sections */
+.scene-section {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card);
+}
+.scene-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition);
+  position: relative;
+}
+.scene-header:hover { background: var(--card-hover); }
+.scene-header .scene-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem; height: 2.4rem;
+  background: rgba(197,162,88,0.12);
+  color: var(--accent-gold);
+  border: 1px solid rgba(197,162,88,0.3);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.scene-header .scene-title {
+  flex: 1;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.scene-header .scene-meta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.scene-header .chevron {
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+  transition: transform var(--transition);
+  color: var(--text-muted);
+}
+.scene-section.open .scene-header .chevron { transform: rotate(90deg); }
+
+.scene-body {
+  display: none;
+  padding: 0 1.2rem 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.scene-section.open .scene-body { display: block; }
+
+/* Emotion Bar */
+.emotion-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin: 1rem 0 0.5rem;
+  flex-wrap: wrap;
+}
+.emotion-tag {
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.emotion-tag.shock { background: rgba(220,50,50,0.15); color: #e05555; border: 1px solid rgba(220,50,50,0.3); }
+.emotion-tag.unease { background: rgba(180,120,50,0.15); color: #c09040; border: 1px solid rgba(180,120,50,0.3); }
+.emotion-tag.curiosity { background: rgba(80,160,200,0.15); color: #60b0d0; border: 1px solid rgba(80,160,200,0.3); }
+.emotion-tag.tension { background: rgba(200,60,60,0.15); color: #d06060; border: 1px solid rgba(200,60,60,0.3); }
+.emotion-tag.focus { background: rgba(100,180,100,0.15); color: #70c070; border: 1px solid rgba(100,180,100,0.3); }
+.emotion-tag.release { background: rgba(100,160,220,0.15); color: #70a8e0; border: 1px solid rgba(100,160,220,0.3); }
+.emotion-tag.awe { background: rgba(180,130,220,0.15); color: #b090e0; border: 1px solid rgba(180,130,220,0.3); }
+.emotion-tag.action { background: rgba(220,160,50,0.15); color: #d0a040; border: 1px solid rgba(220,160,50,0.3); }
+.emotion-tag.satisfy { background: rgba(80,200,120,0.15); color: #60d080; border: 1px solid rgba(80,200,120,0.3); }
+.emotion-tag.fear { background: rgba(120,40,120,0.15); color: #a050a0; border: 1px solid rgba(120,40,120,0.3); }
+.emotion-tag.climax { background: rgba(255,200,50,0.15); color: #f0c840; border: 1px solid rgba(255,200,50,0.3); }
+.emotion-tag.hook { background: rgba(200,50,80,0.15); color: #d04060; border: 1px solid rgba(200,50,80,0.3); }
+.emotion-tag.lowkey { background: rgba(100,120,140,0.15); color: #8098a8; border: 1px solid rgba(100,120,140,0.3); }
+.emotion-tag.choice { background: rgba(200,180,60,0.15); color: #c8b840; border: 1px solid rgba(200,180,60,0.3); }
+
+/* Role Subsections */
+.role-block {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.role-block-header {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.role-block-header:hover { filter: brightness(1.2); }
+.role-block-header .role-icon {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.role-block-body {
+  display: none;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid var(--border);
+}
+.role-block.open .role-block-body { display: block; }
+.role-block-header .role-chevron {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+}
+.role-block.open .role-block-header .role-chevron { transform: rotate(90deg); }
+
+/* Role colors */
+.role-art .role-block-header { background: var(--role-art-bg); color: var(--role-art); }
+.role-art .role-icon { background: var(--role-art); }
+.role-art .role-block-body { background: rgba(74,144,199,0.03); }
+
+.role-prog .role-block-header { background: var(--role-prog-bg); color: var(--role-prog); }
+.role-prog .role-icon { background: var(--role-prog); }
+.role-prog .role-block-body { background: rgba(76,175,80,0.03); }
+
+.role-audio .role-block-header { background: var(--role-audio-bg); color: var(--role-audio); }
+.role-audio .role-icon { background: var(--role-audio); }
+.role-audio .role-block-body { background: rgba(156,100,214,0.03); }
+
+.role-plan .role-block-header { background: var(--role-plan-bg); color: var(--role-plan); }
+.role-plan .role-icon { background: var(--role-plan); }
+.role-plan .role-block-body { background: rgba(230,145,62,0.03); }
+
+/* Content styles */
+.detail-group { margin-bottom: 0.8rem; }
+.detail-group:last-child { margin-bottom: 0; }
+.detail-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-brass);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+}
+.detail-text {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.8;
+}
+.detail-text ul {
+  list-style: none;
+  padding-left: 0;
+}
+.detail-text ul li {
+  padding: 0.2rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+.detail-text ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.65rem;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border-light);
+}
+
+/* Spec items */
+.spec-item {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(34,34,34,0.5);
+  font-size: 0.85rem;
+}
+.spec-item:last-child { border-bottom: none; }
+.spec-key {
+  color: var(--accent-brass);
+  font-weight: 600;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.spec-val { color: var(--text); }
+
+/* Timeline items */
+.timeline {
+  position: relative;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 4px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+}
+.timeline-item {
+  position: relative;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem; top: 0.7rem;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-brass);
+  background: var(--bg);
+}
+.timeline-item .time-mark {
+  color: var(--accent-steam);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Dialogue lines */
+.dialogue-line {
+  padding: 0.5rem 0.8rem;
+  margin: 0.3rem 0;
+  border-left: 3px solid var(--role-plan);
+  background: rgba(230,145,62,0.04);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: #ccc;
+}
+.dialogue-line .direction {
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 0.2rem;
+}
+
+/* Presence indicators */
+.presence-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(160,82,45,0.1);
+  border: 1px solid rgba(160,82,45,0.3);
+  color: var(--accent-rust);
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 0.3rem 0.3rem 0.3rem 0;
+}
+.presence-marker::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-rust);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Info cards */
+.info-card {
+  background: rgba(197,162,88,0.05);
+  border: 1px solid rgba(197,162,88,0.15);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 0.8rem 0;
+}
+.info-card h4 {
+  color: var(--accent-gold);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 0.8rem 0;
+}
+.data-table th {
+  background: rgba(197,162,88,0.1);
+  color: var(--accent-gold);
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-light);
+}
+.data-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Punk tags */
+.punk-tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 0.1rem;
+}
+.punk-steam { background: rgba(110,181,208,0.15); color: var(--accent-steam); border: 1px solid rgba(110,181,208,0.3); }
+.punk-diesel { background: rgba(200,140,60,0.15); color: #c8903c; border: 1px solid rgba(200,140,60,0.3); }
+.punk-cyber { background: rgba(100,220,180,0.15); color: #60dcb0; border: 1px solid rgba(100,220,180,0.3); }
+
+/* Priority tags */
+.priority-tag {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.priority-a { background: rgba(220,50,50,0.2); color: #e05555; }
+.priority-b { background: rgba(220,160,50,0.2); color: #d0a040; }
+.priority-c { background: rgba(100,180,100,0.2); color: #70c070; }
+
+/* Emotional arc chart */
+.arc-chart {
+  width: 100%;
+  height: 120px;
+  margin: 1rem 0;
+  position: relative;
+  border-left: 2px solid var(--border-light);
+  border-bottom: 2px solid var(--border-light);
+}
+.arc-bar {
+  position: absolute;
+  bottom: 0;
+  background: linear-gradient(180deg, var(--accent-gold), rgba(197,162,88,0.3));
+  border-radius: 3px 3px 0 0;
+  transition: height 0.5s ease;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: var(--accent-gold);
+  padding-top: 4px;
+  font-weight: 600;
+}
+.arc-label {
+  position: absolute;
+  bottom: -22px;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  html { font-size: 14px; }
+  .side-nav { display: none; }
+  .main-content { padding: 1rem; }
+  .site-header { padding: 1.5rem 1rem; }
+  .site-header h1 { font-size: 1.6rem; }
+  .header-stats { gap: 1rem; }
+  .scene-header { padding: 0.8rem; gap: 0.5rem; }
+  .scene-header .scene-title { font-size: 1rem; }
+  .data-table { font-size: 0.75rem; }
+  .data-table th, .data-table td { padding: 0.4rem; }
+}
+
+@media (max-width: 480px) {
+  .header-stats .stat-value { font-size: 1.1rem; }
+  .scene-header .scene-meta { display: none; }
+}
+
+/* Interaction step list */
+.step-list {
+  counter-reset: step-counter;
+  list-style: none;
+  padding: 0;
+}
+.step-list li {
+  counter-increment: step-counter;
+  padding: 0.5rem 0 0.5rem 2.5rem;
+  position: relative;
+  border-left: 2px solid var(--border);
+  margin-left: 0.8rem;
+  font-size: 0.85rem;
+}
+.step-list li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: -0.9rem;
+  top: 0.45rem;
+  width: 1.6rem; height: 1.6rem;
+  line-height: 1.6rem;
+  text-align: center;
+  background: var(--card);
+  border: 2px solid var(--accent-brass);
+  border-radius: 50%;
+  color: var(--accent-brass);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Second-by-second */
+.second-item {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(34,34,34,0.4);
+}
+.second-item:last-child { border-bottom: none; }
+.second-time {
+  min-width: 50px;
+  color: var(--accent-steam);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.second-desc { color: var(--text); }
+
+/* Reference section */
+.ref-section {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.ref-header {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-steam);
+}
+.ref-header:hover { background: var(--card-hover); }
+.ref-header .ref-icon {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+}
+.ref-section.open .ref-header .ref-icon { transform: rotate(90deg); }
+.ref-body {
+  display: none;
+  padding: 0 1.2rem 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.ref-section.open .ref-body { display: block; }
+
+/* Subtitle note */
+.note-block {
+  background: rgba(110,181,208,0.06);
+  border-left: 3px solid var(--accent-steam);
+  padding: 0.6rem 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Five doors grid */
+.doors-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+}
+.door-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem;
+  background: rgba(17,17,17,0.8);
+}
+.door-card .door-num {
+  font-weight: 700;
+  color: var(--accent-brass);
+  font-size: 0.82rem;
+  margin-bottom: 0.3rem;
+}
+.door-card .door-desc {
+  font-size: 0.82rem;
+  color: var(--text);
+}
 </style>
 </head>
 <body>
 
-<h1>《灰燈寨》第一章 DEMO</h1>
-<p class="subtitle">完整遊戲設計書 — 玩法 ｜ 對白 ｜ 環境 ｜ 感官規格 ｜ 世界觀 ｜ 開發備註</p>
-<p style="text-align:center;font-size:11px;color:var(--text-dim);margin-bottom:20px;">VR 第一人稱 驚悚空間解謎冒險 ｜ Unreal Engine 5.7 ｜ Meta Quest ｜ PS VR2 ｜ Steam VR ｜ 18禁</p>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- DEMO 總覽 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="ref-section">
-<div class="ref-header" onclick="this.classList.toggle('open')">
-<span class="ref-icon">📋</span>
-<span class="ref-title">DEMO 總覽 — 第一章定位、基本資訊、情緒波形、語言與美術風格</span>
-<span class="ref-toggle">▼</span>
-</div>
-<div class="ref-body">
-
-<h3>1.1 第一章定位</h3>
-<p>第一章「入口水巷」是《灰燈寨》的完整可玩 DEMO。目標不是展示所有遊戲機制，而是讓玩家在 55-70 分鐘裡經歷一次完整的情感弧線——從震撼到探索到專注到釋放到驚悚——並在最後一秒種下「我想繼續往下玩」的鉤子。</p>
-<p>DEMO 結束時玩家應該帶走三個印象：<b>灰燈寨是一個有人住的真實地方</b>、<b>阿徹是一個我想跟著走下去的角色</b>、<b>那個「不存在的樓層」是我必須知道的秘密</b>。</p>
-
-<h3>1.2 基本資訊</h3>
-<div class="info-grid">
-<div class="info-card"><div class="info-label">章節名稱</div><div class="info-value">第一章：入口水巷</div></div>
-<div class="info-card"><div class="info-label">預估時長</div><div class="info-value">55-70 分鐘</div></div>
-<div class="info-card"><div class="info-label">謎題數量</div><div class="info-value">3 主線 + 2 環境互動 + 1 隱藏</div></div>
-<div class="info-card"><div class="info-label">爽點位置</div><div class="info-value">段落五末尾（引擎啟動 + 井道燈光）</div></div>
-<div class="info-card"><div class="info-label">驚悚鉤子</div><div class="info-value">電梯面板異常編號 + 機房敲擊聲</div></div>
-<div class="info-card"><div class="info-label">向下看體驗</div><div class="info-value">2 次（屋頂溫和 + 梯井深度衝擊）</div></div>
-<div class="info-card"><div class="info-label">其他存在</div><div class="info-value">7 處（腳印→暗巷光→貓→棚屋→門縫光→人影→電梯人聲）</div></div>
-<div class="info-card"><div class="info-label">美術核心</div><div class="info-value">九龍城寨 70% × 柴油龐克 80% × 蒸氣龐克殖民 × 賽博龐克</div></div>
-</div>
-
-<h3>1.3 情緒波形</h3>
-<div class="emo-wave">
-<span class="emo-step">震撼</span><span class="emo-arrow">→</span>
-<span class="emo-step">低壓探索</span><span class="emo-arrow">→</span>
-<span class="emo-step">小專注（閘門）</span><span class="emo-arrow">→</span>
-<span class="emo-step">探索+選擇</span><span class="emo-arrow">→</span>
-<span class="emo-step">壓迫轉變</span><span class="emo-arrow">→</span>
-<span class="emo-step">緊張上升</span><span class="emo-arrow">→</span>
-<span class="emo-step">專注（收音機）</span><span class="emo-arrow">→</span>
-<span class="emo-step">專注解謎（主迴路）</span><span class="emo-arrow">→</span>
-<span class="emo-step" style="color:var(--green);">釋放</span><span class="emo-arrow">→</span>
-<span class="emo-step">緊張+恐深</span><span class="emo-arrow">→</span>
-<span class="emo-step">行動壓力</span><span class="emo-arrow">→</span>
-<span class="emo-step">專注（蒸氣門鎖）</span><span class="emo-arrow">→</span>
-<span class="emo-step">敬畏+啟動檢查</span><span class="emo-arrow">→</span>
-<span class="emo-step" style="color:var(--accent);font-weight:700;">全章爽點高潮</span><span class="emo-arrow">→</span>
-<span class="emo-step" style="color:var(--red);">驚悚鉤子收尾</span>
-</div>
-
-<h3>1.4 語言設計原則</h3>
-<p>阿徹是中英混血兒。父親為英裔技術工人，母親為城寨本地居民。主要語言為英文，在以下情境切換為中文（粵語）：</p>
-<ul>
-<li><b>本地事物、食物名稱：</b>「煲仔飯」「阿灰」「老莫」「士巴拿（扳手）」</li>
-<li><b>情緒觸發、城寨記憶：</b>結尾切換「給個準話」（粵語）</li>
-<li><b>與老祁相關的一切：</b>老祁是用粵語帶他入行的</li>
-<li><b>憤怒或粗口：</b>粵語更有力量</li>
-</ul>
-<p>台詞調性為<b>黑色幽默</b>——用嘲諷保護自己，用玩笑消化恐懼。但在真正重要的時刻嘴會閉上。</p>
-
-<h3>1.5 美術風格總則</h3>
-<p>每個場景的設備都是兩個時代的混合體——殖民時期安裝的原始設備帶有蒸氣龐克的維多利亞式精緻美學，被城寨居民用柴油龐克的方式改裝、擴建。兩者在同一台設備上共存。</p>
-<div class="punk-cols">
-<div class="punk-card punk-steam">
-<h4>蒸氣龐克元素（殖民層）</h4>
-<p>黃銅管線 + 花紋法蘭 + 壓力錶 + 蝶形閥 + 花體英文 + 維多利亞裝飾鑄鐵 + 精密齒輪</p>
-</div>
-<div class="punk-card punk-diesel">
-<h4>柴油龐克元素（城寨層）</h4>
-<p>粗暴鑄鐵外殼 + 大型鉚釘 + 裸露齒輪鏈 + 無裝飾功能至上 + 手寫膠帶標籤</p>
-</div>
-<div class="punk-card punk-cyber">
-<h4>賽博龐克元素（資訊層）</h4>
-<p>CRT 螢幕雪花屏 + 系統終端 + 報修工單數位格式 + 偶爾閃現的數據殘影</p>
-</div>
-</div>
-
-<h3>1.6 玩法教學曲線</h3>
-<p>五個階段對應五層操作複雜度的遞進。每個階段都在前一階段基礎上加入新操作，同時重複使用之前學過的操作。到第五階段時玩家已掌握所有核心操作。</p>
-<div class="teach-curve">
-<div class="teach-step"><span class="teach-num">1</span><div><div class="teach-name">第一階段（進入）</div><div class="teach-desc">基本手部動作：抓取、撕扯、推動</div></div></div>
-<div class="teach-step"><span class="teach-num">2</span><div><div class="teach-name">第二階段（水巷）</div><div class="teach-desc">傳送移動 + 環境觀察 + 簡單物件操作（插銷）+ 路線選擇</div></div></div>
-<div class="teach-step"><span class="teach-num">3</span><div><div class="teach-name">第三階段（配電室）</div><div class="teach-desc">搜索 + 破壞 + 固定裝置初次使用（單窗口單目標）</div></div></div>
-<div class="teach-step"><span class="teach-num">4</span><div><div class="teach-name">第四階段（梯井）</div><div class="teach-desc">搬運大型物品 + 固定裝置進階（雙窗口）+ 連鎖傳送 + 閥門操作</div></div></div>
-<div class="teach-step"><span class="teach-num">5</span><div><div class="teach-name">第五階段（機房）</div><div class="teach-desc">多步檢查 + 三步序列操作 + 固定裝置 + 傳送 + 物理互動完整融合</div></div></div>
-</div>
-
-</div>
-</div>
-
-<div class="legend">
-<div class="legend-item"><div class="legend-dot" style="background:var(--line)"></div>一般節點</div>
-<div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>謎題</div>
-<div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>爽感高潮</div>
-<div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>驚悚/其他存在</div>
-<div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div>路線選擇</div>
-<div class="legend-item"><span class="tag tag-play">玩法</span></div>
-<div class="legend-item"><span class="tag tag-sense">感官</span></div>
-<div class="legend-item"><span class="tag tag-story">敘事</span></div>
-<div class="legend-item"><span class="tag tag-event">事件</span></div>
-<div class="legend-item"><span class="tag tag-horror">驚悚</span></div>
-</div>
-
-<div class="expand-all">
-<button onclick="toggleAll()">全部展開 / 收合</button>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 第一階段 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="phase">
-<div class="phase-header">
-<div class="phase-num" style="background:#3a3a38;color:#b4b2a9;">1</div>
-<div class="phase-info">
-<div class="phase-title">第一階段：進入 — 封鎖線</div>
-<div class="phase-meta">⏱ 約 5 分鐘 ｜ 教學目標：手部抓取、撕扯、推動</div>
-</div></div>
-<div class="nodes">
-
-<!-- A1 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🌑</span>
-<div>
-<div class="node-title">黑暗中醒來</div>
-<div class="node-tags"><span class="tag tag-sense">聲景五層疊加</span><span class="tag tag-sense">手柄脈搏 1.2Hz</span><span class="tag tag-horror">遠處粵語收音機</span></div>
-</div>
-<span class="node-time">90 秒</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境視覺（美術）</div>
-<p>全黑 90 秒。不是選單的黑——是有空間感的黑暗。VR 空間追蹤正常運作（轉頭有聲音方位變化）。左下角載入指示：黃銅錶殼圓形壓力錶，直徑約 8cm，花體英文刻度「0-100 PSI」，纖細銅指針末端有裝飾性箭頭。錶面玻璃有一道細裂紋從2點鐘方向延伸到中心。指針從0緩慢攀升到80-90（不到100——系統從未完美）。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-audio">聲音設計（程式）</div>
-<ul>
-<li><b>0-5秒</b>｜水滴層：左前方上方45度約10-15m。不規則間隔（2s/3.5s/1.8s/4s隨機）。每滴結構：清脆嗒（50ms）→金屬共振尾音（800ms）→迴音沿垂直結構上傳2-3秒消失</li>
-<li><b>5-15秒</b>｜風層：右後方4點鐘→穿過頭頂→左前方10點鐘。被金屬管道切割的口哨質感（800-1200Hz泛音）</li>
-<li><b>15-30秒</b>｜機械層：30-50Hz極低頻從腳下。手柄同步脈搏開始（1.2Hz，振幅從0漸增到20%）</li>
-<li><b>30-50秒</b>｜結構層：鋼纜嗡聲（左上20m）＋鐵皮吱嘎（右5m）＋遠處搖晃嗒嗒嗒（正上30m+）＋蒸氣排放嘶嘶（右前15m，每20秒一次持續1.5秒）</li>
-<li><b>50-70秒</b>｜人的痕跡：極遠處（50m+感覺）粵語收音機雜訊約5秒後消失</li>
-<li><b>70-90秒</b>｜五層同時存在。壓力錶到頂。直接進入遊戲不跳選單</li>
-</ul>
-</div>
-<div class="section role-prog">
-<div class="section-title st-haptic">觸覺規格（程式）</div>
-<p>第30秒手柄開始低頻脈搏。頻率1.2Hz（比人類平靜心率略慢）。振幅5秒內從0%漸增到20%。這是灰燈寨的「心跳」——中央升降梯主引擎殘餘振動穿過金屬骨架傳導。此脈搏將貫穿全遊戲。</p>
-</div>
-</div>
-</div></div>
-
-<!-- A2 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🏙️</span>
-<div>
-<div class="node-title">仰望灰燈寨</div>
-<div class="node-tags"><span class="tag tag-sense">三層垂直視覺</span><span class="tag tag-story">雙套管線系統</span><span class="tag tag-horror">封鎖線外新鮮腳印</span></div>
-</div>
-<span class="node-time">3-4 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境視覺（美術）</div>
-<p><b>第一層 地面~15m 清晰區：</b>水泥鐵皮牆面油漬淚痕。封死店面「榮記五金 WING KEE HARDWARE」紅底白字。嵌入式信箱中英門牌「G/F, Unit 3 — 地下三號」。蒸氣龐克銅管（花紋浮雕法蘭六瓣花形螺栓，黃銅壓力錶花體英文刻度，某個指針還在微顫）× 柴油龐克鉚釘管（廢料拼接粗大鉚釘大小不一，接口處液體滲出鏽色淚痕）。牆面80cm處蠟筆塗鴉：孩子畫的高樓、彩色蛇管線（蛇頭有齒輪壓力錶）、安全帽火柴人、紅色大圓太陽。殖民花磚從水泥裂縫露出。</p>
-<p><b>第二層 15~50m 中景區：</b>吊樓窄橋曬台。出前一丁空包裝當晾夾。藍色人字拖掛電線上。窗口光混合（鎢絲暖黃/燭火搖曳/LED冷白）。霓虹殘骸「廿四小時維修 24HR REPAIR」。某層外牆直徑超半公尺蒸氣主管——銅綠斑駁帶裝飾性渦卷鑄鐵支架。管線上被居民直接蓋棚屋（利用餘溫）。某層白色被單在晾——乾淨的今天洗的。</p>
-<p><b>第三層 50m+ 霧區：</b>巨大黑色剪影某些傾斜。蒸氣排放口噴白色蒸氣柱——像城寨從毛孔冒汗。結構微微搖晃應力聲。</p>
-<p>封鎖線柵欄上：中英雙語公告「灰燈寨封鎖區域 第3號通告」。馬克筆「裡面還有人住啊幹」。褪色尋人啟事。柵欄底部：新鮮腳印 + 剪斷的鐵絲網（剪口閃亮沒鏽蝕——有人比阿徹先進去了）。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-punk">龐克元素（企劃）</div>
-<p>蒸氣龐克（殖民層）：黃銅管線＋花紋法蘭＋壓力錶＋蝶形閥＋花體英文＋維多利亞鑄鐵裝飾。柴油龐克（城寨層）：粗暴鑄鐵＋大型鉚釘＋裸露齒輪＋無裝飾＋手寫膠帶標籤。兩套管線纏繞在一起——精緻黃銅被粗暴鑄鐵包裹穿越寄生。殖民優雅被城寨野性吞噬但沒消化。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">程式備註</div>
-<p>30秒自由凝視——不催促不彈UI。玩家可以自由轉頭觀看。此時無傳送移動功能。</p>
-</div>
-</div>
-</div></div>
-
-<!-- A3 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🖐</span>
-<div>
-<div class="node-title">封鎖線互動 — 手部操作教學</div>
-<div class="node-tags"><span class="tag tag-play">撕帶×2</span><span class="tag tag-play">推門</span><span class="tag tag-sense">罐頭4秒物理音效</span><span class="tag tag-event">阿徹首句台詞</span></div>
-</div>
-<span class="node-time">1-2 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">玩法操作（程式）</div>
-<p><b>互動A 撕塑膠帶 ×2：</b>手進入15cm互動範圍→微弱振動脈衝暗示可互動→握拳抓取→向旁拉（帶子繃緊視覺變形＋吱吱聲＋手柄阻力漸增）→啪斷裂（阻力突然消失）。第一條較新有彈性。第二條較舊一拉就斷。兩條阻力不同——教學「材質影響觸感」。</p>
-<p><b>互動B 推柵門：</b>雙手各抓橫桿（冰冷金屬管觸感直徑約3cm表面鏽蝕粗糙）→前半段巨大阻力（門底鏽蝕摩擦地面——尖銳金屬刮水泥聲＋強持續震動＋碎鏽片散落積水棕色渾濁）→臨界點鏽蝕壓碎（阻力驟減60%）→後半段順暢→撞門檔（沉悶碰撞＋門框微振）。</p>
-<p><b>連帶反應 罐頭掉落：</b>柵門震動→鐵絲鬆→維他奶鋁罐（紅白經典包裝壓扁但商標能認）脫離。音效序列：0.0s叮（高頻碰撞）→0.3s噹（中頻空心共振）→0.5-3.0s滾動（頻率遞減）→3.5s碰牆叩（靜止）。其他環境聲降30%讓罐頭成焦點。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白（企劃）</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Every time I look at this place, I keep thinking it'll finally fall apart. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Thirty years of thinking that. Starting to feel like the punchline is on me. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Floor number says 'unknown'. That's reassuring. Love a good mystery before my morning tea. <span class="lang">（英文——翻報修工單後）</span></div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Someone had taste. Vita Soy. The original, not the low-sugar rubbish. <span class="lang">（英文——看到罐頭後）</span></div>
-</div>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 第二階段 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="phase">
-<div class="phase-header">
-<div class="phase-num" style="background:#0c447c;color:#85b7eb;">2</div>
-<div class="phase-info">
-<div class="phase-title">第二階段：水巷穿越</div>
-<div class="phase-meta">⏱ 約 12-15 分鐘 ｜ 教學目標：傳送移動、物件操作、路線選擇</div>
-</div></div>
-<div class="nodes">
-
-<!-- B1 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">💧</span>
-<div>
-<div class="node-title">踏入水中 — 第一次傳送移動</div>
-<div class="node-tags"><span class="tag tag-move">傳送教學</span><span class="tag tag-sense">水面全感官</span></div>
-</div>
-<span class="node-time">1-2 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境（美術）</div>
-<p>狹窄水巷寬約2m向前約30m後拐彎消失。約10cm深積水——油光灰綠死水。水面漂紙片木屑塑膠袋。水面下沉底物：人字拖、梅林午餐肉罐、陽光檸檬茶泡脹紙包、港式八卦週刊褪色明星面孔、一把生鏽剪刀。天花板破裂水管滴水成節拍器。管線上方臘腸臘肉鹹魚串掛風乾。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">傳送系統規格（程式）</div>
-<p><b>指向：</b>搖桿指向水面→光圈=水面漣漪效果（非UI圓圈）。色溫暖色2700K。油汙水面反射帶彩虹色干涉紋。預回饋：極微弱水面張力破裂聲。</p>
-<p><b>傳送瞬間（0.3秒）：</b>邊緣vignette收縮到70%→展開回100%。水平傳送無失重感。</p>
-<p><b>落地視覺：</b>水花從腳下爆開有方向濺射（水巷有微弱水流方向）。高度約15cm。某些碰牆壁出現新水痕沿油漆紋理下流。漣漪向四周擴散碰壁反射交叉。漂浮物被推動。3-4秒消散。</p>
-<p><b>落地聲音：</b>咚（100-200Hz,100ms）＋嘩（500-1500Hz,200ms）＋噼啪（2000-5000Hz,300ms散射）＋迴音沿水巷傳播反射。</p>
-<p><b>落地觸覺：</b>中等震動50ms「軟」質感（液體介質）＋0.3秒微弱持續震動（水流動模擬）。</p>
-</div>
-</div>
-</div></div>
-
-<!-- B2 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">👀</span>
-<div>
-<div class="node-title">水巷環境探索</div>
-<div class="node-tags"><span class="tag tag-story">犯罪痕跡</span><span class="tag tag-story">城寨生活</span><span class="tag tag-event">阿徹台詞×2</span></div>
-</div>
-<span class="node-time">3-4 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境敘事物件（美術）</div>
-<ul>
-<li>紅管幫標記——紅色管線圖案邊緣滴淌。旁「過這條線你自己負責」（粵語）</li>
-<li>「鹽$2 糖$3」透明小袋白色粉末——日常和地下的模糊邊界</li>
-<li>封死的店面第三間：夾板較新→縫隙看進去有空化學試劑瓶＋燒焦鋁箔紙團（毒品加工痕跡）</li>
-<li>油桶路燈——廢棄油桶改裝。旁邊紙板價格表：「梅林午餐肉一罐換兩節南孚電池」「出前一丁三包換一個十號士巴拿」</li>
-<li>推車——掀開容器底部殘留物加死蟑螂</li>
-<li>牆壁低處粉筆跳房子格子終點是樓層編號</li>
-</ul>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白（企劃）</div>
-<div class="dialogue"><span class="speaker">阿徹（看到毒品加工點）：</span>Cooking. And I don't mean dinner. Then again, in this place, the line between chemistry and cuisine was always a bit... flexible. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（看到老莫的電線）：</span>This wiring... I know this. 老莫. He used to do it exactly like this. Hope he got out. He owed me forty bucks. <span class="lang">（英文＋粵語人名）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（看到蟑螂）：</span>At least someone's still living here rent-free. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<!-- B3 PUZZLE -->
-<div class="node puzzle">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🧩</span>
-<div>
-<div class="node-title">閘門小謎題 — 蒸氣龐克齒輪箱 × 柴油龐克配重</div>
-<div class="node-tags"><span class="tag tag-puzzle">環境謎題</span><span class="tag tag-play">插銷拔出</span><span class="tag tag-sense">黃銅齒輪精密聲</span></div>
-</div>
-<span class="node-time">~3 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-punk">閘門視覺設計（美術）</div>
-<p>底座：殖民時期黃銅齒輪箱。精緻花紋鑄鐵外殼，蕨葉浮雕，橢圓形品牌標誌（英文皇冠圖案大部分被鏽模糊）。觀察窗可見內部黃銅齒輪做工精密。上半部：城寨加裝的柴油龐克配重——粗鐵鏈穿過兩個裸露工業級鑄鐵滑輪，吊一塊約30cm見方水泥配重塊（模板紋路）。鐵鏈每節大小不同（不同來源拼接）。插銷：鑄鐵棒（柴油龐克風格）穿過齒輪箱兩個孔位。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">操作流程（程式）</div>
-<ul>
-<li><b>步驟1 觀察：</b>玩家傳送到閘門前。可見齒輪箱、配重、鐵鏈、滑輪的連接關係。插銷在齒輪箱側面胸口高度（鏽色鐵跟黃銅不同容易識別）</li>
-<li><b>步驟2 拔出插銷：</b>抓握柄（冰冷粗糙鐵棒）→拉（阻力大＋強持續震動＋金屬摩擦嘶聲）→突然脫出（齒輪箱彈簧釋放→黃銅齒輪精密咔嗒嗒嗒嗒——比鑄鐵更輕更清脆）→手柄短促回彈震動</li>
-<li><b>步驟3 配重落下：</b>水泥塊沿導軌下滑（鐵鏈嘩啦＋摩擦聲＋碰撞聲）→閘門被拉起（液壓緩衝咔嗡聲）→水從底部湧過另一側形成湍流帶走漂浮物→手柄腳下微弱衝擊震動</li>
-</ul>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白（企劃）</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>British engineering meets 城寨 DIY. Somehow it works. Like most things here. <span class="lang">（英文＋粵語）</span></div>
-</div>
-</div>
-</div></div>
-
-<!-- B4 HORROR -->
-<div class="node horror">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">👁</span>
-<div>
-<div class="node-title">暗巷裡的光 — 其他存在 #2</div>
-<div class="node-tags"><span class="tag tag-horror">手電筒光+離去腳步</span><span class="tag tag-horror">收音機被關</span></div>
-</div>
-<span class="node-time">30 秒</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">觸發規格（程式）</div>
-<p>玩家傳送經過閘門後的特定位置觸發。側面暗巷深處約10m——手電筒或手機光斑在移動搖晃→光滅→腳步聲嗒嗒嗒朝反方向離開。水面殘留波紋（波紋從暗巷方向擴散到主水巷）。暗巷深處極微弱粵語收音機新聞廣播語調持續幾秒→被關掉或調低。</p>
-</div>
-<div class="section role-art">
-<div class="section-title st-env">環境（美術）</div>
-<p>暗巷口牆壁噴漆箭頭和代碼——非官方導航系統。旁邊不同色噴漆十字架——「這裡有人死過」的非正式標記。十字架下面有人用更小的字寫了日期和名字。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Neighbours. Friendly as always. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<!-- B5 -->
-<div class="node horror">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🐱</span>
-<div>
-<div class="node-title">貓「阿灰」 — 其他存在 #3</div>
-<div class="node-tags"><span class="tag tag-horror">金屬敲擊+貓掠過</span><span class="tag tag-story">餵貓痕跡</span><span class="tag tag-event">粵語觸發「阿灰」</span></div>
-</div>
-<span class="node-time">1 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">事件規格（程式）</div>
-<p>拐彎處觸發：黑暗中金屬叩叩叩三下→5秒沉默→灰色瘦貓極快掠過水面（爪子水花）→鑽進牆壁洞口消失→洞口裡嗒嗒嗒嗒越來越遠。</p>
-</div>
-<div class="section role-art">
-<div class="section-title st-env">環境（美術）</div>
-<p>洞口旁公雞碗碟裡乾飯粒魚骨。碟旁牆面粉筆「阿灰」。塑膠瓶切開的水盆裡相對乾淨的水（今天或昨天換的）。一小截紅色毛線。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>阿灰. At least the cat has a name and a meal plan. Doing better than half the people here. <span class="lang">（粵語名字＋英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<!-- B6 CHOICE -->
-<div class="node choice">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🔀</span>
-<div>
-<div class="node-title">棚屋 + 路線選擇</div>
-<div class="node-tags"><span class="tag tag-choice">路線A管線攀爬</span><span class="tag tag-choice">路線B手搖升降機</span><span class="tag tag-story">棚屋100天正字</span></div>
-</div>
-<span class="node-time">3-4 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">棚屋環境（美術）</div>
-<p>波浪鐵板「XX建材」加「MADE IN HONG KONG」。內部：幾罐過期梅林午餐肉。翻爛的金庸《射鵰英雄傳》明河社版（書脊斷了橡皮筋紮住）。銀行日曆維港夜景（事故前一年某些日期被圈）。「古法煲仔飯」剪報。防水布床鋪紙板枕頭。半包走私萬寶路仿冒品。碳筆正字超過100天（某日旁「阿英生日」）。鏽了的煲仔爐＋維他奶盒＋陽光盒。爐灶旁地面有溫度。鐵蓋儲物洞（出前一丁麻油味×2＋雙飛人藥水＋繃帶＋小摺刀）。門框自製辟邪符號（紅膠帶紅布條＋鐵絲幾何形狀）。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">兩條路線規格（程式）</div>
-<p><b>路線A 管線攀爬：</b>三個抓取點序列傳送。舊膠帶標記位置。老祁粉筆圓圈一橫。手抓→管線嘎吱→0.4秒過渡→鐵皮轟嗡鏽屑脫落。快速但需要抓取動作。</p>
-<p><b>路線B 手搖升降機：</b>外殼柴油龐克鏽蝕鐵箱。內部齒輪機構露出殖民黃銅花紋齒輪＋精密棘輪。需在棚屋裡找到黃銅手搖把手（握柄磨損滾花紋路）→插入安裝座咔噠到位→手搖旋轉互動（手柄搖把圓周阻力回饋）→每轉一圈上升約20cm→齒輪精密嗒嗒聲（蒸氣龐克的精緻——跟城寨粗暴聲完全不同）＋棘輪每咬合一次清脆喀聲（防回滑）。約十圈到頂。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹（選升降機）：</span>Manual labour. The original renewable energy. <span class="lang">（英文）</span></div>
-<p style="color:var(--text-dim);font-size:12px;">選攀爬路線不說話——攀爬不適合開玩笑。</p>
-</div>
-</div>
-</div></div>
-
-<!-- B7 -->
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">⬇️</span>
-<div>
-<div class="node-title">屋頂向下看 #1 → 空間轉換進入灰燈寨</div>
-<div class="node-tags"><span class="tag tag-sense">溫和恐高教學</span><span class="tag tag-sense">手柄脈搏啟動</span><span class="tag tag-horror">其他存在#4 哼歌</span></div>
-</div>
-<span class="node-time">2-3 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境（美術）</div>
-<p><b>屋頂：</b>3-4公尺高度。水巷全景。溫和恐高教學。側巷深處鐵絲網塑膠布圍出空間LED植物燈照植物——城寨裡種菜。</p>
-<p><b>通道：</b>低矮約1.5m（VR本能低頭）。通道壁多層油漆下殖民標示「GOVERNMENT PROPERTY — NO TRESPASSING — 政府物業 不得擅入」。混凝土柱英文鋼印「SEC.7 — COL.14」。蒸氣管線橫過頭頂——黃銅安全閥每30秒噴拳頭大蒸氣。走出通道：垂直裂縫。殖民花磚殘存。轉角土地公位「土地公在此 福德正神」（粵語）。自創符號被手掌摸光滑。粉筆「保佑平安」下面「保佑水管別再爆」。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-haptic">觸覺（程式）</div>
-<p>走出通道後手柄微弱持續低頻震動開始——灰燈寨的環境脈搏。從此貫穿到遊戲結束。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Right. Engine oil, rust, and someone's dinner. The holy trinity of Graylight. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 第三階段 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="phase">
-<div class="phase-header">
-<div class="phase-num" style="background:#72243e;color:#ed93b1;">3</div>
-<div class="phase-info">
-<div class="phase-title">第三階段：走廊與配電室</div>
-<div class="phase-meta">⏱ 約 15-18 分鐘 ｜ 教學目標：搜索物品、破壞互動、固定裝置首次使用</div>
-</div></div>
-<div class="nodes">
-
-<!-- C1-C2 condensed -->
-<div class="node horror">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🚪</span>
-<div>
-<div class="node-title">住居區走廊 + 五扇門環境敘事</div>
-<div class="node-tags"><span class="tag tag-story">五個家庭五個故事</span><span class="tag tag-horror">其他存在#5 門縫光消失</span><span class="tag tag-play">收音機互動（可選）</span></div>
-</div>
-<span class="node-time">6-8 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">走廊環境（美術）</div>
-<p>寬約1.5m。蒸氣龐克銅管×柴油龐克鐵管天花板交織。黃銅三通閥某出口被鐵瓶蓋鉚死。大型蒸氣主管安全閥排嘶嘶此起彼伏（下方地面對應一排小水坑）。留言板：自治委員會第47次供水決議＋紅筆吐槽＋英文恐嚇信＋陳太尋人紙條。勢力交界兩色線劃界＋邊界條款。</p>
-<p><b>門①（開著）：</b>公雞碗黑色粉末＋筷子平放。XX茶餐廳塑膠杯奶茶結塊。孩子蠟筆畫太陽。褪色港星海報。黑布鞋鞋尖朝門。角落蒸氣龐克風格老式收音機。</p>
-<p><b>門②（關著沒鎖）：</b>褪色春聯。倒貼福字。銅錢紅線發綠。八卦鏡。自寫道教符。鐵絲自製辟邪物。</p>
-<p><b>門③（關著透光）：</b>微弱暖色光。嘗試推→裡面鎖著→光晃了→消失→無聲。</p>
-<p><b>門④（焊死）：</b>鐵條粉筆「已清」。焊點旁指甲從裡面刮出的痕跡。四五道平行。</p>
-<p><b>門⑤（沒門板黑暗）：</b>煙燻黑色。拖拽刮痕。紀念角：芳姐照片＋香灰＋關帝簡筆畫＋LED電子蠟燭。</p>
-<p><b>走廊盡頭：</b>褪色紅色門簾＋高跟鞋刮痕＋門縫紫紅色光（含蓄成人暗示）。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">收音機互動規格（程式）</div>
-<p>門①裡的收音機。木殼黃銅旋鈕。旋轉互動（手柄旋轉阻力＋刻度卡位嗒嗒嗒）。大部分頻道雜訊。某頻率清晰2-3秒：外界粵語新聞「政府發言人表示封鎖區的安全評估仍在進行中」→雜訊吞沒。頻率不可再現。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白（企劃）</div>
-<div class="dialogue"><span class="speaker">阿徹（聽到廣播）：</span>Still 'assessing'. Been assessing for years. Must be a very thorough assessment. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（聞到煲仔飯）：</span>煲仔飯. The claypot kind. With the crispy rice at the bottom. Smells like the one old 祁 used to make on night shifts. <span class="lang">（粵語食物名＋英文＋粵語人名）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（門拒絕後）：</span>All right. Not bothering you. Wouldn't want to interrupt a good 煲仔飯. <span class="lang">（英文＋粵語）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（第四扇門指甲刮痕）：</span><i>嘴張了一下像要說什麼——然後閉上了。某些東西連黑色幽默都覆蓋不了。</i> <span class="lang">（沉默）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（紅色門簾）：</span>Every floor has a story. Some you read. Some you don't. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<!-- C3 PUZZLE -->
-<div class="node puzzle">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🧩</span>
-<div>
-<div class="node-title">謎題1：主迴路重啟 + 固定裝置教學</div>
-<div class="node-tags"><span class="tag tag-puzzle">核心謎題語法教學</span><span class="tag tag-play">固定裝置首次使用</span><span class="tag tag-sense">三時代繼電器聲音</span></div>
-</div>
-<span class="node-time">5-7 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-punk">配電盤視覺（美術）</div>
-<p>三排配電盤三個時代：殖民原裝蒸氣龐克（黃銅外框葡萄藤齒輪紋樣＋花紋鑄鐵面板＋精緻旋鈕花瓣雕花＋黃銅球形拉桿＋微型鎢絲燈嵌黃銅蛋齒紋燈座）→柴油龐克替換（粗糙鐵板＋拼湊旋鈕＋裸露接線＋鉚釘）→自製廢料（敲出的鐵皮外殼＋彈簧翹板開關＋白漆手寫標籤）。</p>
-<p><b>固定裝置：</b>多塊金屬拼接外殼（鑄鐵主體＋黃銅接口＋銅片握把）。5-6個裸露鉚釘不對稱。某角凹痕。黃銅錶殼指針儀表（玻璃裂紋＋內部齒輪可見＋銅指針＋花體蝕刻刻度）。大型黃銅滾花旋鈕。銅製聚焦環發射端口。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">操作流程（程式）</div>
-<ul>
-<li><b>砸鎖：</b>扳手揮動互動×2。第一下叮。第二下斷裂——鎖掉地滾</li>
-<li><b>找到跳脫的拉桿：</b>第二排第三個黃銅拉桿朝下。雙語標籤「CENTRAL LIFT MAIN CIRCUIT — 切勿擅動」</li>
-<li><b>嘗試直接推（失敗）：</b>黃銅球形握柄光滑涼精緻→卡住完全不動→硬震動→機構內部卡死聲</li>
-<li><b>固定裝置對準啟動：</b>接近時有輕微磁吸引導（最後5cm柔和力引導角度）→按鈕→嗡聲加大琥珀色光暈變亮→指示燈穩定琥珀→指針開始回落→滴答倒數</li>
-<li><b>窗口內推拉桿：</b>有阻力可動→嗒嗒嗒連續聲像上發條→中點卡位咔→最後被彈簧吸上去→到位咔噠</li>
-</ul>
-</div>
-<div class="section role-prog">
-<div class="section-title st-audio">爽感序列（程式）</div>
-<p>拉桿到位→1秒完全安靜→嗒（殖民原裝繼電器咔噠清脆精密帶細碎尾音）→嗒嗒嗒依序亮（黃銅燈座綠光像微型翡翠）→到替換模組咔噠變粗糙沉悶→到自製模組咔啦更不精確更有力→走廊燈連鎖亮起（每盞0.2秒漸亮＋燈絲震動聲）光帶骨牌→手柄脈搏從雜訊變穩定心跳。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白（企劃）</div>
-<div class="dialogue"><span class="speaker">阿徹（卡住）：</span>Jammed. Of course it's jammed. Nothing in this place works on the first try. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（砸鎖）：</span>Percussive maintenance. My specialty. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（對固定裝置）：</span>Come on, old girl. Do your thing. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（燈亮後）：</span>Still works. Victorian engineering. They built things to last. Unlike everything else in this city. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 第四階段 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="phase">
-<div class="phase-header">
-<div class="phase-num" style="background:#712b13;color:#f0997b;">4</div>
-<div class="phase-info">
-<div class="phase-title">第四階段：斷裂梯井</div>
-<div class="phase-meta">⏱ 約 12-15 分鐘 ｜ 教學目標：大型物品搬運、雙窗口固定、連鎖傳送、閥門操作</div>
-</div></div>
-<div class="nodes">
-
-<div class="node horror">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">👤</span>
-<div>
-<div class="node-title">梯井深淵 + 人影 — 其他存在 #6</div>
-<div class="node-tags"><span class="tag tag-sense">向下看#2 強衝擊</span><span class="tag tag-horror">人影3秒對視</span></div>
-</div>
-<span class="node-time">2-3 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-env">環境（美術）</div>
-<p>方形垂直空間。雙語門牌殖民格式「3/F — 三樓」。某些被噴漆覆蓋民間編號「紅管三區」。梯井壁裸露蒸氣龐克管線沿垂直攀升——黃銅主蒸氣管每層一個壓力錶和排放閥。某閥定期噴微小蒸氣向上飄升消失在黑暗中。約3m缺口（氣焊切割藍紫色氧化層——有人故意拆）。對面門框粉筆圓圈一橫（老祁標記）。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">人影觸發（程式）</div>
-<p>玩家站在缺口邊向下看或向前看時觸發。上方約四層——逆光暖黃色輪廓光的人形剪影。臉和身體在陰影中。低頭看著玩家。持續3秒。然後慢慢退後消失。無聲。手柄無對應震動（比有震動更不安）。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>That's... let me do the math... about seven storeys of absolutely nothing between me and a very educational lesson in gravity. <span class="lang">（英文——看缺口）</span></div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Not even a wave. Rude. <span class="lang">（英文——聲音比之前輕了。玩笑掩飾不安）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node puzzle">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🧩</span>
-<div>
-<div class="node-title">謎題2：搭橋 + 連鎖傳送 + 鐵板墜落</div>
-<div class="node-tags"><span class="tag tag-puzzle">搬運+雙窗口固定</span><span class="tag tag-move">連鎖傳送（時間壓力）</span><span class="tag tag-sense">8秒墜落音效</span></div>
-</div>
-<span class="node-time">5-7 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">操作流程（程式）</div>
-<ul>
-<li><b>找鐵板：</b>儲物空間裡長鐵板「SCAFFOLDING — MAX LOAD 250KG」。約2m長30cm寬</li>
-<li><b>搬運：</b>雙手抓一端→拖動（金屬底部刮水泥——刺耳聲被梯井放大成混亂嘯叫→手柄持續低頻震動）→前端碰到對面平台噹</li>
-<li><b>固定：</b>固定裝置對準第一塊殘存梯板啟動（指針倒數＋滴答）→固定第二塊（第二個窗口啟動——兩個滴答交疊＋裝置冒蒸氣接近極限）</li>
-<li><b>連鎖傳送（三點快速通過）：</b><br/>
-點1：鐵板前1/3。落地鐵板微彎1-2cm＋轟嗡＋手柄強震200ms＋腳下持續顫抖<br/>
-點2：鐵板中段。第一塊梯板嘎吱加速衰減＋手柄不規則脈衝加速＋光圈在抖（需快速傳送）<br/>
-點3：對面平台安全到達。水泥沉實穩定。手柄恢復正常</li>
-<li><b>墜落序列（6-8秒）：</b>嘎鬆脫→翻轉墜入→1s碰牆巨響→2s彈開→3s碰另面牆→3-6s下落漸遠→6s落水咚→7s迴音→8s無</li>
-</ul>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹（看鐵板）：</span>Two-fifty. I'm under that. Probably. If I skip lunch. Which I have. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（傳送點1）：</span>Don't look down. Don't look down. Don't — <span class="lang">（英文——自我催眠碎念）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（安全後）：</span>Well. That's one way to make sure I don't change my mind about going back. Commitment. That's what this place teaches you. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node puzzle">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">♨️</span>
-<div>
-<div class="node-title">蒸氣門鎖 — 閥門解鎖</div>
-<div class="node-tags"><span class="tag tag-puzzle">蒸氣閥門謎題</span><span class="tag tag-sense">蒸氣溫暖觸覺</span></div>
-</div>
-<span class="node-time">2-3 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-punk">門鎖機構（美術）</div>
-<p>門框上黃銅汽缸（蒸氣龐克）直徑約8cm長約20cm（花紋浮雕＋品牌標誌）。活塞桿連接鐵製門閂穿過門框。旁邊蒸氣管線上殖民黃銅蝶形閥（蝶翼花紋浮雕＋銅質T形把手）目前關閉。管線上小型壓力錶指針在零位。</p>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">操作（程式）</div>
-<p>抓T形把手（黃銅比鐵更光滑溫暖）→旋轉90度（平滑阻力）→蒸氣嘶嘶聲響起→壓力錶指針攀升→汽缸活塞緩慢縮回（可見活塞桿移動）→門閂一點一點退出→咔噠解鎖。管線接口處噴出白霧（暖的——手柄微弱升溫震動）。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>Steam-powered door lock. Because a regular lock would've been too simple. The British loved their unnecessarily complicated solutions. I have that in common with them, apparently. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 第五階段 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="phase">
-<div class="phase-header">
-<div class="phase-num" style="background:#3c3489;color:#afa9ec;">5</div>
-<div class="phase-info">
-<div class="phase-title">第五階段：機房與電梯啟動</div>
-<div class="phase-meta">⏱ 約 15-18 分鐘 ｜ 教學目標：子系統檢查、多步序列操作、所有操作融合</div>
-</div></div>
-<div class="nodes">
-
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">⚙️</span>
-<div>
-<div class="node-title">引擎巨獸 + 機房環境探索</div>
-<div class="node-tags"><span class="tag tag-sense">龐克混合視覺衝擊</span><span class="tag tag-story">殖民引擎×港式儀式</span><span class="tag tag-event">阿徹父親連結 Dad...</span></div>
-</div>
-<span class="node-time">3-4 min</span>
-</div>
-<div class="node-body">
-<div class="section role-art">
-<div class="section-title st-punk">引擎視覺（美術——全章最重要的美術資產）</div>
-<p><b>底座/核心（蒸氣龐克殖民原裝）：</b>花紋鑄鐵底座維多利亞渦卷裝飾。黃銅閥門手輪（輻條雕花）排列兩側。8-10個黃銅壓力錶花體英文刻度全部躺零位。銘牌嵌在花紋鑄鐵框裡被油漬覆蓋幾乎看不見。</p>
-<p><b>外面包覆（柴油龐克城寨改裝）：</b>粗暴鑄鐵外殼板大型鉚釘（大小方向不統一）。裸露齒輪系統——十幾個不同大小齒輪組成傳動鏈全部可見全部靜止。飛輪直徑超過1m鑄鐵（表面磨損金屬光澤）。油壓管線粗暴纏繞（某些接口滲油）。</p>
-<p><b>基座上：</b>碎了的小香爐＋幾根燒一半的香殘跡。紅色利是封「開工大吉」（殖民引擎被港式儀式祝福）。坐光滑的好座位靠牆油漬。正品萬寶路菸蒂。</p>
-<p><b>更衣櫃五個：</b>①名字塗抹＋工作服＋口袋地圖「夜班路線」②鎖孔金屬堵死 ③「誰他媽又拿了我的士巴拿——祁」④⑤褪色鎖著。旁邊拆一半的無線電＋《東方日報》＋英文組裝手冊（有指紋咖啡漬）。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹（進入）：</span>Well. She's still here. Bigger than I remember. Or maybe I got smaller. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（老祁紙條）：</span>And here I am, holding his 士巴拿. Circle of life. <span class="lang">（英文＋粵語）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（看到英文手冊伸手碰封面又收回）：</span>Dad... <span class="lang">（英文——極輕。可能錯過）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🔧</span>
-<div>
-<div class="node-title">啟動前三步檢查 + 三步啟動序列</div>
-<div class="node-tags"><span class="tag tag-play">油尺/冷卻水/皮帶</span><span class="tag tag-play">燃料/預熱/拉桿</span><span class="tag tag-event">每步黑色幽默台詞</span></div>
-</div>
-<span class="node-time">5-7 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">啟動前檢查（程式）</div>
-<ul>
-<li><b>檢查① 油位：</b>引擎右側。黃銅油尺握柄帶環扣→拉出（金屬棒滑順阻力＋嘶聲）→末端深褐色機油黏膩觸感→花體英文MIN/MAX→偏低但可接受→插回咔噠</li>
-<li><b>檢查② 冷卻水：</b>引擎頂部（需傳送到較高平台）。黃銅水箱蓋花紋浮雕＋蝶形旋鈕「CAUTION — HOT」→旋開（旋轉阻力→到位氣壓嘶聲＋微弱殘餘蒸氣）→水面薄薄鏽色→蓋回咔噠</li>
-<li><b>檢查③ 皮帶：</b>引擎左側。寬5cm橡膠帆布皮帶。手按壓中段（橡膠彈性回饋下沉2cm彈回）。龜裂但結構完整</li>
-</ul>
-</div>
-<div class="section role-prog">
-<div class="section-title st-play">三步啟動序列（程式）</div>
-<ul>
-<li><b>步驟① 燃料閥門：</b>黃銅蒸氣龐克大旋鈕「FUEL SUPPLY」。雙手旋→前半圈鏽蝕嘎吱強阻力→突然鬆了阻力驟減70%→引擎內部柴油古嚕→透明油管液體流過先帶氣泡後穩定→壓力錶黃銅指針精密滴答攀升→咔噠鎖定</li>
-<li><b>步驟② 預熱：</b>柴油龐克鑄鐵按鈕＋殖民黃銅溫度計華氏度。按住→指針入黃色（5秒金屬膨脹叮噹）→繼續攀升（5秒蒸氣從引擎縫隙鑽出如呼吸）→入綠色啪鎖定</li>
-<li><b>步驟③ 主引擎拉桿：</b>蒸氣龐克花紋鑄鐵底座＋柴油龐克粗暴桿體（兩種風格接縫）。雙手抓磨光球形握柄→向下拉前半段巨大阻力→臨界點阻力消失→砰到底</li>
-</ul>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹（啟動前）：</span>Haven't been fired up in... a while. Can't just cold-start her. Well, I can. But I'd rather not explain to the ghost of whoever built this thing why I blew up their engine. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（油位）：</span>Low but workable. Story of my life. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（冷卻水）：</span>Water's the colour of tea. Which in this place probably means someone tried to use it as tea. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（皮帶）：</span>Belt's still got some life in it. More than I can say for most things down here. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（燃料流入）：</span>Fuel valve... open. She's drinking. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（預熱）：</span>Come on... come on... Preheat done. She's warming up. Like a cat on a radiator. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（拉桿前）：</span>Here goes nothing. Or here goes everything. Depends on your perspective. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node climax">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🔥</span>
-<div>
-<div class="node-title">全章高潮：引擎啟動 12 秒 + 銘牌揭露</div>
-<div class="node-tags"><span class="tag tag-sense">三頻段齒輪交響</span><span class="tag tag-sense">蒸氣排放節奏</span><span class="tag tag-sense">全遊戲最強觸覺</span><span class="tag tag-event">British engine, Chinese blessing. Like me.</span></div>
-</div>
-<span class="node-time">2-3 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-audio">逐秒時間軸（程式）</div>
-<ul>
-<li><b>0秒｜衝擊：</b>整台引擎猛烈震動。手柄強震300ms全遊戲最強單次。地板微彈。螺栓掉地叮</li>
-<li><b>0.5秒｜沉默：</b>引擎沒著。完全安靜（反差）</li>
-<li><b>1秒｜第一聲咳：</b>乾澀機械咳嗽。黑煙一小團。蒸氣管線接口噴出白色蒸氣柱</li>
-<li><b>1.5秒｜沉默</b></li>
-<li><b>2秒｜咳咳：</b>更有力。活塞壓縮空氣呼呼聲</li>
-<li><b>2.5秒｜轟——點火：</b>柴油爆燃。工業級地底甦醒聲</li>
-<li><b>3-8秒｜三頻段齒輪：</b>小齒輪（黃銅殖民800-1200Hz清脆嗒嗒嗒）→帶動中齒輪（鑄鐵城寨300-500Hz沉穩）→帶動大齒輪（更大鑄鐵100-200Hz磨盤隆隆）。咬合點潤滑油飛濺像琥珀流星</li>
-<li><b>5-10秒｜蒸氣系統：</b>壓力錶指針一個個從零位彈起。安全閥嘶嘶嘶不同節拍</li>
-<li><b>8-12秒｜飛輪：</b>1m飛輪加速。灰塵螺旋。邊緣反光畫圓成光圈</li>
-<li><b>持續：</b>機房燈隨轉速漸亮呼吸</li>
-</ul>
-<p><b>觸覺弧線：</b>0秒最強單次→1-2秒沉默反差→2.5秒起嗒嗒嗒逐漸加速→8秒起融合持續低頻（最強持續）→穩定後成新環境基準線。</p>
-</div>
-<div class="section role-art">
-<div class="section-title st-env">銘牌揭露（美術）</div>
-<p>引擎震動把銘牌油漬震落——黃銅字母逐漸露出。玩家走近手指擦掉更多油漬（擦拭互動）。一個字母一個字母：MANUFACTURED IN BIRMINGHAM, ENGLAND。旁邊更小字十九世紀末生產年份。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹（手指停在ENGLAND上。沉默。看了碎香爐和紅包）：</span>British engine, Chinese blessing. Somehow she's still running. <span class="lang">（英文）</span></div>
-<div class="dialogue"><span class="speaker">阿徹（停頓）：</span>Like me. <span class="lang">（英文——最輕最短。然後回到工作）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node horror">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">⚡</span>
-<div>
-<div class="node-title">電梯門控 + 面板異常 — 驚悚鉤子</div>
-<div class="node-tags"><span class="tag tag-puzzle">謎題3 門控固定</span><span class="tag tag-horror">B-7F 閃現</span><span class="tag tag-sense">脈搏錯拍</span></div>
-</div>
-<span class="node-time">3-4 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-play">操作（程式）</div>
-<p>固定裝置穩定門控模組→傳送回電梯門前（油面每次心跳畫同心圓）→雙手拉開厚重金屬門（極重隆隆→卡了→爆發力→順了→兩聲碰撞）。門上方殖民花紋鑄鐵門楣「CENTRAL LIFT — 中央升降機」黃銅字母。內側可見蒸氣龐克精密滾輪導軌黃銅減震彈簧。</p>
-<p>井道照明逐層上亮嗒嗒嗒。井道內壁裸露齒輪和鋼纜導輪像垂直鐘錶內部。面板按鈕亮起雙語「G/F 地下」「1/F 一樓」英式樓層。</p>
-<p><b>異常觸發：</b>面板閃爍不在序列的編號1秒→全井道照明驟暗→鎢絲暗紅→手柄脈搏從穩定心跳變成錯拍（像心律不整）→約2秒後恢復正常。「不存在的樓層」B-7F第一次閃現。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>... That wasn't on the floor plan. <span class="lang">（英文）</span></div>
-</div>
-</div>
-</div></div>
-
-<div class="node climax">
-<div class="node-card" onclick="toggle(this)">
-<div class="node-head">
-<span class="node-icon">🔚</span>
-<div>
-<div class="node-title">電梯最後的聲音 + DEMO 收尾</div>
-<div class="node-tags"><span class="tag tag-horror">其他存在#7 粵語爭論+敲擊</span><span class="tag tag-event">語言切換 英→粵收尾</span></div>
-</div>
-<span class="node-time">1-2 min</span>
-</div>
-<div class="node-body">
-<div class="section role-prog">
-<div class="section-title st-audio">電梯段聲音設計（程式）</div>
-<p>門關上。黑屏。聲景：齒輪聲（殖民精密＋城寨粗暴疊加）＋鋼纜嗡聲＋引擎低頻＋蒸氣壓力波動嘶嘶。手柄微弱向上運動暗示。</p>
-<p>極遠極微弱——粵語兩人低聲爭論（粵語：拗頸）。偶爾「不行」（粵語：唔得）「為什麼」（粵語：點解）被齒輪蓋過。3秒消失。是井道某層門縫洩漏的聲音。</p>
-<p>最後2秒——下方機房方向「叩」一下。有意識的金屬敲擊。不是結構聲不是機械聲——是某個東西（某個人？）在敲。機房裡沒有其他人。</p>
-</div>
-<div class="section role-art">
-<div class="section-title st-env">結尾畫面（美術）</div>
-<p>轎廂內壁刻字「陳志明 到此一遊」和「I was here — 1997」。黃銅蛋齒紋燈座嵌著不匹配的後換燈泡。呼吸聲1秒2秒3秒。然後畫面淡入——新樓層。門緩慢打開。更高的位置。更多空氣。遠處吊樓輪廓。蒸氣從電梯門框縫隙微微飄出——像電梯在呼吸。</p>
-</div>
-<div class="section role-plan">
-<div class="section-title st-dial">對白——全 DEMO 最後一句</div>
-<div class="dialogue"><span class="speaker">阿徹：</span>So. Are you gonna exist or not? <span class="lang">（英文——理性判斷：這個樓層到底存不存在）</span></div>
-<p style="color:var(--text-dim);font-size:12px;margin:6px 0;">停了一拍。語言切換。</p>
-<div class="dialogue"><span class="speaker">阿徹：</span>給個準話。 <span class="lang">（粵語——城寨的語言。理性問完問題後，城寨長大的孩子用回家的語言要求答案。整個DEMO最後的語言是粵語。）</span></div>
-</div>
-</div>
-</div></div>
-
-</div></div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 全章感官設計總表 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="ref-section">
-<div class="ref-header" onclick="this.classList.toggle('open')">
-<span class="ref-icon">📊</span>
-<span class="ref-title">全章感官設計總表</span>
-<span class="ref-toggle">▼</span>
-</div>
-<div class="ref-body">
-<div style="overflow-x:auto;">
-<table class="data-table">
-<thead>
-<tr><th>區段</th><th>龐克元素</th><th>遊戲性</th><th>光線</th><th>主聲景</th><th>被動觸覺</th><th>其他存在</th><th>台詞調性</th><th>情緒</th></tr>
-</thead>
-<tbody>
-<tr><td class="td-label">開場</td><td>黃銅壓力錶載入 + 蒸氣排放</td><td>無</td><td>全黑→淡入</td><td>五層聲景 + 蒸氣</td><td>引擎脈搏</td><td>腳印 + 鐵絲網</td><td>自嘲</td><td>震撼</td></tr>
-<tr><td class="td-label">水巷前段</td><td>蒸氣龐克銅管 + 柴油龐克鉚釘</td><td>傳送教學</td><td>水面光斑</td><td>滴水 + 風 + 蒸氣</td><td>無</td><td>暗巷手電筒</td><td>黑色幽默</td><td>低壓探索</td></tr>
-<tr><td class="td-label">水巷閘門</td><td>蒸氣齒輪箱 + 柴油配重</td><td>小型環境謎題（插銷 + 配重）</td><td>同上</td><td>黃銅齒輪精密咔嗒</td><td>無</td><td>無</td><td>自嘲</td><td>專注→小釋放</td></tr>
-<tr><td class="td-label">貓 + 棚屋</td><td>無（生活區）</td><td>路線選擇（攀爬 vs 升降機）</td><td>昏暗</td><td>安靜</td><td>無</td><td>餵貓碟 + 溫熱爐灶</td><td>溫暖嘲諷</td><td>探索→選擇</td></tr>
-<tr><td class="td-label">空間轉換</td><td>殖民標示 + 蒸氣安全閥</td><td>無</td><td>鎢絲黃光</td><td>共振 + 蒸氣嘶 + 哼歌</td><td>脈搏開始</td><td>哼歌的人</td><td>冷幽默</td><td>壓迫轉變</td></tr>
-<tr><td class="td-label">走廊</td><td>蒸氣龐克三通閥 + 安全閥排</td><td>收音機互動（調頻找外界廣播）</td><td>明暗交替</td><td>蒸氣嘶起彼伏</td><td>微弱脈搏</td><td>門縫光消失 + 煲仔飯</td><td>政治諷刺 + 沉默（指甲刮痕）</td><td>緊張上升</td></tr>
-<tr><td class="td-label">配電室</td><td>三時代混合面板（黃銅/鑄鐵/廢料）</td><td>謎題1 主迴路</td><td>指示燈閃爍</td><td>三時代繼電器序列</td><td>高頻電流</td><td>兩組腳印</td><td>自嘲 + 文化觀察</td><td>專注→釋放</td></tr>
-<tr><td class="td-label">梯井</td><td>蒸氣管線沿井道攀升 + 壓力錶</td><td>搭橋（物理 + 固定 + 連鎖傳送）</td><td>上微光下黑暗</td><td>風 + 水滴 + 蒸氣</td><td>結構微震</td><td>人影 3 秒</td><td>恐懼幽默 + 假淡定</td><td>緊張→行動</td></tr>
-<tr><td class="td-label">蒸氣門鎖</td><td>蒸氣驅動門鎖機構</td><td>閥門互動解鎖門</td><td>同上</td><td>蒸氣充氣 + 活塞退</td><td>蒸氣溫暖</td><td>無</td><td>英式嘲諷</td><td>專注→滿足</td></tr>
-<tr><td class="td-label">機房</td><td>蒸氣龐克基座 + 柴油龐克外殼 + 齒輪鏈</td><td>三步檢查 + 三步啟動</td><td>多光源 + 隨轉速呼吸</td><td>三頻段齒輪交響 + 蒸氣排放節奏</td><td>共振→強震</td><td>螢幕殘影</td><td>身份認同</td><td>敬畏→爽點</td></tr>
-<tr><td class="td-label">電梯 + 異常</td><td>井道齒輪鐘錶機構 + 黃銅面板</td><td>無</td><td>逐層亮→驟暗</td><td>精密 + 粗暴齒輪疊加 + 蒸氣 + 粵語爭論</td><td>錯拍心跳</td><td>粵語爭論 + 金屬敲擊</td><td>嚴肅收尾</td><td>驚悚鉤子</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 傳送移動感官設計 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="ref-section">
-<div class="ref-header" onclick="this.classList.toggle('open')">
-<span class="ref-icon">🎯</span>
-<span class="ref-title">傳送移動感官設計 — 三階段回饋 + 各區域傳送特色</span>
-<span class="ref-toggle">▼</span>
-</div>
-<div class="ref-body">
-
-<h3>設計哲學</h3>
-<p>傳送移動（Teleport）為預設。玩家永遠不應該覺得自己在「使用遊戲功能」，而是在「踏出下一步」。每次傳送都是一個完整的微體驗——有預備、有過渡、有落地——整個過程約 0.5 到 1 秒但塞滿感官資訊。</p>
-
-<h3>三階段回饋系統</h3>
-<p><b>第一階段：指向預回饋</b></p>
-<ul>
-<li><b>金屬地面：</b>金屬光澤光圈 + 叩擊預告音效</li>
-<li><b>水面：</b>漣漪效果 + 水面張力聲</li>
-<li><b>木板：</b>暖色調光圈 + 吱嘎預告</li>
-<li><b>不穩定結構：</b>光圈抖動 + 低頻應力聲</li>
-</ul>
-
-<p><b>第二階段：傳送過渡</b></p>
-<ul>
-<li><b>水平傳送：</b>邊緣 vignette + 短促手柄震動</li>
-<li><b>向下傳送：</b>失重暗示（畫面微上飄）+ 落地重震</li>
-<li><b>向上傳送：</b>壓縮展開感 +「拉起」持續震動</li>
-</ul>
-
-<p><b>第三階段：落地環境反應（0.3 秒內即時回饋）</b></p>
-<ul>
-<li><b>金屬上：</b>鏈條擺動、工具盒彈跳</li>
-<li><b>木板上：</b>吱嘎微傾</li>
-<li><b>水中：</b>水花漣漪、漂浮物被推動</li>
-<li><b>碎石上：</b>細碎聲、石子滾動</li>
-<li><b>靠近環境物件時：</b>杯子晃、牆板震、燈泡搖光影動</li>
-</ul>
-
-<h3>第一章各區域傳送特色</h3>
-<div style="overflow-x:auto;">
-<table class="data-table">
-<thead>
-<tr><th>區域</th><th>地面材質</th><th>落地特色</th><th>環境反應</th></tr>
-</thead>
-<tbody>
-<tr><td class="td-label">水巷</td><td>積水（不同深度）</td><td>每步水花漣漪、咚嘩噼啪複合音效</td><td>漂浮物被水波推動。乾燥高處聲音突然切換</td></tr>
-<tr><td class="td-label">走廊</td><td>水泥（乾燥/潮濕/碎石交替）</td><td>不同狀態質感各異</td><td>門的開閉改變回音空間</td></tr>
-<tr><td class="td-label">配電室</td><td>碎石水泥</td><td>乾燥石材叩擊</td><td>落地時配電盤金屬外殼微微共振</td></tr>
-<tr><td class="td-label">梯井</td><td>水泥平台 + 鐵板</td><td>鐵板上深沉金屬彎曲鼓面聲</td><td>腳下持續低頻顫抖（不穩定結構）</td></tr>
-<tr><td class="td-label">機房</td><td>油漬地面</td><td>黏滯感、沉悶聲</td><td>油面每次心跳畫同心圓</td></tr>
-</tbody>
-</table>
-</div>
-
-</div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 世界觀元素素材庫 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="ref-section">
-<div class="ref-header" onclick="this.classList.toggle('open')">
-<span class="ref-icon">🌏</span>
-<span class="ref-title">世界觀元素素材庫 — 第一章優先使用</span>
-<span class="ref-toggle">▼</span>
-</div>
-<div class="ref-body">
-
-<h3>5.1 水——灰燈寨的血液</h3>
-<ul>
-<li>雙套供水管線（官方蒸氣龐克銅管 + 居民柴油龐克雜管）</li>
-<li>天花板滴水點下方凹坑 + 接水容器</li>
-<li>水巷積水的分層色差（油光 + 藻類 + 洗滌劑泡沫）</li>
-</ul>
-
-<h3>5.2 電——被爭奪的神經</h3>
-<ul>
-<li>電線鋪設方式反映階級——官方管道線路→有關係的人從管道直接接出→普通居民外走線（老化龜裂，某處被剪斷又繞接）→最底層的手搖發電機和電池組</li>
-</ul>
-
-<h3>5.3 食物——以物易物經濟</h3>
-<ul>
-<li>梅林午餐肉、出前一丁、淡奶為交易貨幣單位</li>
-<li>管線上臘腸臘肉鹹魚風乾</li>
-<li>煲仔爐 + 維他奶紙包盒 +「古法煲仔飯」食譜剪報</li>
-<li>LED 植物燈種菜</li>
-</ul>
-
-<h3>5.4 信仰與迷信</h3>
-<ul>
-<li>土地公位（紅紙 + 花生米 + 酒）</li>
-<li>關帝簡筆畫 + LED 電子蠟燭</li>
-<li>自創護身符號被手掌摸光滑</li>
-<li>八卦鏡 + 銅錢 + 自寫道教符紙</li>
-<li>引擎基座上「開工大吉」紅包</li>
-</ul>
-
-<h3>5.5 兒童痕跡</h3>
-<ul>
-<li>蠟筆塗鴉（80cm 高度）——高樓、彩色蛇管線（蛇頭有齒輪壓力錶）、安全帽火柴人、紅色太陽</li>
-<li>粉筆跳房子格子終點是樓層編號</li>
-</ul>
-
-<h3>5.6 犯罪痕跡（環境敘事，非互動）</h3>
-<ul>
-<li>「鹽$2 糖$3」透明袋（日常與地下的模糊邊界）</li>
-<li>毒品加工場所痕跡（化學試劑瓶 + 燒焦鋁箔）</li>
-<li>被撬保險箱散落身份證</li>
-<li>紅色門簾 + 高跟鞋刮痕 + 紫紅色光（含蓄成人暗示）</li>
-</ul>
-
-<h3>5.7 殖民混血建築</h3>
-<ul>
-<li>殖民花磚從水泥裂縫露出</li>
-<li>多層油漆下的英文政府標示</li>
-<li>混凝土柱英文鋼印編號</li>
-<li>雙語招牌（中文上英文下→殖民格式）</li>
-<li>英式樓層計法（G/F 不是 1F）</li>
-<li>配電盤三個時代設備共存</li>
-<li>引擎銘牌 MANUFACTURED IN BIRMINGHAM, ENGLAND</li>
-</ul>
-
-<h3>5.8 通訊</h3>
-<ul>
-<li>手寫留言板多層紙條對話串</li>
-<li>噴漆箭頭代碼導航系統</li>
-<li>拆了一半的無線電嘗試聯繫外界</li>
-<li>收音機調頻偶爾捕捉到外界廣播</li>
-</ul>
-
-<h3>5.9 身體磨損痕跡</h3>
-<ul>
-<li>欄杆被磨發亮的抓握位</li>
-<li>牆壁一公尺高灰色蹭痕</li>
-<li>特定樓梯踏板磨損更嚴重</li>
-<li>座位被坐出凹陷 + 靠牆油漬靠背痕</li>
-<li>菸蒂同品牌集中一處</li>
-</ul>
-
-</div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!-- 開發備註 -->
-<!-- ═══════════════════════════════════════ -->
-<div class="ref-section">
-<div class="ref-header" onclick="this.classList.toggle('open')">
-<span class="ref-icon">🔧</span>
-<span class="ref-title">開發備註 — 優先級、音效、配音、VR 舒適度</span>
-<span class="ref-toggle">▼</span>
-</div>
-<div class="ref-body">
-
-<h3>6.1 環境細節優先級</h3>
-<p>所有環境細節分三級部署：</p>
-<div style="overflow-x:auto;">
-<table class="data-table">
-<thead>
-<tr><th>等級</th><th>定義</th><th>數量</th><th>說明</th></tr>
-</thead>
-<tbody>
-<tr><td class="td-label" style="color:var(--red);">A級（必看）</td><td>放在玩家視線自然路徑上</td><td>每區段 3-4 個</td><td>定義灰燈寨氣質的核心元素</td></tr>
-<tr><td class="td-label" style="color:var(--accent);">B級（探索獎勵）</td><td>需要玩家主動走到非主路徑位置</td><td>每區段 2-3 個</td><td>獎勵好奇心的額外細節</td></tr>
-<tr><td class="td-label" style="color:var(--text-dim);">C級（隱藏）</td><td>需要特定互動（翻蓋、拉袋、湊近牆面小字）</td><td>每區段 1-2 個</td><td>核心玩家才會發現的深層敘事</td></tr>
-</tbody>
-</table>
-</div>
-
-<h3>6.2 龐克元素開發重點</h3>
-<ul>
-<li>統一感靠<b>光照 + 後處理 + 髒漬 Decal + 音效</b>，不靠模型統一</li>
-<li>蒸氣龐克元素集中在殖民時期原裝設備——黃銅材質 + 花紋鑄鐵 + 花體英文銘牌</li>
-<li>柴油龐克元素集中在城寨改裝——粗暴鑄鐵 + 大型鉚釘 + 裸露齒輪 + 無裝飾</li>
-<li>兩者在同一台設備上共存——<b>接縫處是視覺焦點</b></li>
-<li>蒸氣效果（排放閥噴氣、管線洩漏）用<b>粒子系統 + VFX</b>，成本低但視覺效果強</li>
-</ul>
-
-<h3>6.3 音效優先製作清單</h3>
-<ul>
-<li><b>水巷水花系統：</b>落地 + 漣漪 + 不同深度 + 不同材質</li>
-<li><b>蒸氣管線音效組：</b>排放嘶嘶 + 管線流動古嚕 + 安全閥定期噴氣</li>
-<li><b>齒輪三頻段音效：</b>黃銅高頻 + 鑄鐵中頻 + 大齒輪低頻</li>
-<li><b>繼電器三時代序列：</b>殖民清脆 + 替換粗糙 + 自製咔啦</li>
-<li><b>柴油引擎啟動完整序列：</b>咳→咳咳→轟→轉速攀升→穩定</li>
-<li><b>粵語環境聲素材：</b>收音機廣播 + 遠處哼歌 + 爭論聲片段</li>
-</ul>
-
-<h3>6.4 配音備註</h3>
-<p>阿徹需要一位能<b>自然切換英文和粵語</b>的配音演員（香港裔或混血背景）。關鍵要求：</p>
-<ul>
-<li><b>英文為主體語言</b>——技術操作、劇情推進、黑色幽默全用英文</li>
-<li><b>粵語為情緒觸發語言</b>——食物名稱、人名、粗口、最後一句切換</li>
-<li><b>切換必須自然</b>——不是「現在我要說粵語了」而是語境觸發的自動切換</li>
-<li><b>黑色幽默的語氣：</b>疲倦的、熟悉的、帶著老手的自嘲。不是快嘴喜劇——是慢燒的、乾的、在害怕的時候更乾</li>
-</ul>
-
-<h3>6.5 VR 舒適度</h3>
-<div style="overflow-x:auto;">
-<table class="data-table">
-<thead>
-<tr><th>模式</th><th>移動方式</th><th>說明</th></tr>
-</thead>
-<tbody>
-<tr><td class="td-label">傳送移動（預設）</td><td>搖桿指向 + 傳送</td><td>所有關卡以此為基準設計，體驗完整不打折</td></tr>
-<tr><td class="td-label">自由移動（進階）</td><td>搖桿推動 + 強制 vignette</td><td>額外沉浸選項</td></tr>
-<tr><td class="td-label">最高舒適度</td><td>黑屏過場 + 靜態解謎</td><td>所有被動位移改為黑屏過場</td></tr>
-</tbody>
-</table>
-</div>
-<p style="margin-top:8px;"><b>幀率目標：</b>穩定 90fps（Quest）/ 120fps（PCVR）</p>
-
-</div>
-</div>
+<!-- Side Navigation -->
+<nav class="side-nav" id="sideNav">
+  <a href="#overview"><span class="nav-tooltip">DEMO 總覽</span>OV</a>
+  <a href="#scene0"><span class="nav-tooltip">S0 黑暗中醒來</span>S0</a>
+  <a href="#scene1"><span class="nav-tooltip">S1 仰望灰燈寨</span>S1</a>
+  <a href="#scene2"><span class="nav-tooltip">S2 水巷穿越</span>S2</a>
+  <a href="#scene3"><span class="nav-tooltip">S3 低層配電室</span>S3</a>
+  <a href="#scene4"><span class="nav-tooltip">S4 斷裂梯井</span>S4</a>
+  <a href="#scene5"><span class="nav-tooltip">S5 機房與電梯啟動</span>S5</a>
+  <a href="#sensory"><span class="nav-tooltip">感官總表</span>SS</a>
+  <a href="#teleport"><span class="nav-tooltip">傳送系統</span>TP</a>
+  <a href="#worldlib"><span class="nav-tooltip">世界觀素材庫</span>WB</a>
+</nav>
+
+<!-- Header -->
+<header class="site-header">
+  <h1>灰燈寨 GRAYLIGHT WALLED</h1>
+  <div class="subtitle">Chapter 1 DEMO &mdash; 遊戲設計文件 Game Design Document</div>
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-value">6</div>
+      <div class="stat-label">場景 Scenes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">55-70</div>
+      <div class="stat-label">分鐘 Minutes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">3+2+1</div>
+      <div class="stat-label">謎題 Puzzles</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">VR</div>
+      <div class="stat-label">Quest / PCVR</div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-content">
+
+<!-- Toggle All -->
+<div class="toggle-all-bar">
+  <button class="toggle-all-btn" id="toggleAllBtn" onclick="toggleAll()">展開全部</button>
+</div>
+
+<!-- ==================== DEMO OVERVIEW ==================== -->
+<div class="scene-section" id="overview">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">OV</span>
+    <span class="scene-title">DEMO 總覽 Overview</span>
+    <span class="scene-meta">設計概要</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+
+    <!-- Basic Info -->
+    <div class="info-card">
+      <h4>基本資訊</h4>
+      <div class="spec-item"><span class="spec-key">遊玩時間</span><span class="spec-val">55-70 分鐘</span></div>
+      <div class="spec-item"><span class="spec-key">謎題配置</span><span class="spec-val">3 個主謎題 + 2 個環境互動 + 1 個隱藏互動</span></div>
+      <div class="spec-item"><span class="spec-key">平台</span><span class="spec-val">Meta Quest (90fps) / PCVR (120fps)</span></div>
+      <div class="spec-item"><span class="spec-key">舒適設定</span><span class="spec-val">傳送（預設）/ 自由移動 + Vignette / 最高舒適黑屏過場</span></div>
+    </div>
+
+    <!-- Emotional Arc -->
+    <div class="info-card">
+      <h4>情緒弧線 Emotional Arc</h4>
+      <div class="arc-chart">
+        <div class="arc-bar" style="left:2%;width:12%;height:60%;">
+          <span class="arc-label" style="width:100%;">S0 震撼</span>
+        </div>
+        <div class="arc-bar" style="left:17%;width:12%;height:50%;">
+          <span class="arc-label" style="width:100%;">S1 好奇</span>
+        </div>
+        <div class="arc-bar" style="left:32%;width:14%;height:45%;">
+          <span class="arc-label" style="width:100%;">S2 探索</span>
+        </div>
+        <div class="arc-bar" style="left:49%;width:14%;height:70%;">
+          <span class="arc-label" style="width:100%;">S3 緊張</span>
+        </div>
+        <div class="arc-bar" style="left:66%;width:14%;height:75%;">
+          <span class="arc-label" style="width:100%;">S4 恐深</span>
+        </div>
+        <div class="arc-bar" style="left:83%;width:14%;height:95%;">
+          <span class="arc-label" style="width:100%;">S5 高潮</span>
+        </div>
+      </div>
+      <div style="height:28px;"></div>
+    </div>
+
+    <!-- Language Design -->
+    <div class="info-card">
+      <h4>語言設計 Language Design</h4>
+      <div class="detail-text">
+        <ul>
+          <li><strong>角色：Archer（阿徹）</strong> &mdash; 香港裔混血，自然切換英粵</li>
+          <li><strong>英文為主體語言</strong>，表達主要敘事、觀察與自嘲</li>
+          <li><strong>粵語作為情緒觸發</strong>，在情感高點或文化記憶觸發時自動切換</li>
+          <li><strong>語調：</strong>疲倦、自嘲、慢燒、乾式幽默（dry humour）</li>
+          <li><strong>DEMO 最後一句台詞為粵語</strong>：「給個準話。」&mdash; 代表情感累積的釋放</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Art Style -->
+    <div class="info-card">
+      <h4>美術風格 Art Style</h4>
+      <div class="detail-text">
+        <p>三層龐克（Punk）美學疊加：</p>
+        <ul>
+          <li><span class="punk-tag punk-steam">蒸氣龐克 Steampunk</span> 殖民層 &mdash; 黃銅、花紋鑄鐵、花體英文、維多利亞渦卷、精密齒輪</li>
+          <li><span class="punk-tag punk-diesel">柴油龐克 Dieselpunk</span> 城寨層 &mdash; 鑄鐵、大鉚釘、裸齒輪、廢料拼接、粗暴工業</li>
+          <li><span class="punk-tag punk-cyber">賽博龐克 Cyberpunk</span> 資訊層 &mdash; CRT 雪花屏、LED 種菜、頻率紙卷</li>
+        </ul>
+        <p style="margin-top:0.5rem;">關鍵原則：三者通過<strong>接縫（焦點）</strong>相遇。蒸氣=殖民原裝優雅；柴油=城寨 DIY 粗獷；兩者並存時，接縫就是故事。</p>
+      </div>
+    </div>
+
+    <!-- Teaching Curve -->
+    <div class="info-card">
+      <h4>教學曲線 Teaching Curve (5 階段漸進)</h4>
+      <div class="detail-text">
+        <ul>
+          <li><strong>Phase 1 (S0):</strong> 純感官 &mdash; 無互動，建立空間感與心理預期</li>
+          <li><strong>Phase 2 (S1):</strong> 基礎手部互動 &mdash; 撕塑膠帶、推門，教學「材質影響觸感」</li>
+          <li><strong>Phase 3 (S2):</strong> 傳送 + 簡單謎題 &mdash; 水巷傳送教學、閘門插銷配重、路線選擇</li>
+          <li><strong>Phase 4 (S3):</strong> 核心工具 + 中等謎題 &mdash; 固定裝置教學、主迴路重啟</li>
+          <li><strong>Phase 5 (S4-S5):</strong> 複合挑戰 &mdash; 雙窗口固定、連鎖傳送、啟動序列</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dev Notes -->
+    <div class="info-card">
+      <h4>開發筆記 Dev Notes</h4>
+      <div class="detail-group">
+        <div class="detail-label">優先級系統</div>
+        <div class="detail-text">
+          <span class="priority-tag priority-a">A 必須</span> 核心玩法、關鍵場景元素<br>
+          <span class="priority-tag priority-b">B 重要</span> 強化沉浸感的細節<br>
+          <span class="priority-tag priority-c">C 加分</span> 額外細節、彩蛋
+        </div>
+      </div>
+      <div class="detail-group">
+        <div class="detail-label">龐克開發策略</div>
+        <div class="detail-text">
+          <ul>
+            <li>統一靠光照 + 後處理 + Decal + 音效來區分三種龐克風格</li>
+            <li>蒸氣龐克 = 殖民（黃銅 + 花紋 + 花體英文）</li>
+            <li>柴油龐克 = 城寨（鑄鐵 + 鉚釘 + 裸齒輪）</li>
+            <li>接縫 = 玩家視覺焦點，兩種風格碰撞處</li>
+            <li>蒸氣效果 = 粒子 VFX，低成本高效果</li>
+          </ul>
+        </div>
+      </div>
+      <div class="detail-group">
+        <div class="detail-label">音效優先清單</div>
+        <div class="detail-text">
+          <ul>
+            <li>水花系統（傳送核心）</li>
+            <li>蒸氣組（排放、洩漏、閥門）</li>
+            <li>齒輪三頻段（小黃銅 / 中鑄鐵 / 大鑄鐵）</li>
+            <li>繼電器三時代（殖民精密 / 柴油粗糙 / 自製不精確）</li>
+            <li>引擎啟動 12 秒序列</li>
+            <li>粵語環境音（收音機、爭論、哼歌）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="detail-group">
+        <div class="detail-label">配音指引 Voice Acting</div>
+        <div class="detail-text">
+          <ul>
+            <li>角色：Archer，香港裔混血，自然切換英粵</li>
+            <li>英文為主體敘事語言</li>
+            <li>粵語為情緒觸發語言（記憶、感嘆、文化連結時自動冒出）</li>
+            <li>語調：疲倦、自嘲、慢燒、乾式幽默</li>
+          </ul>
+        </div>
+      </div>
+      <div class="detail-group">
+        <div class="detail-label">VR 舒適度</div>
+        <div class="detail-text">
+          <ul>
+            <li>傳送為預設移動方式</li>
+            <li>自由移動 + Vignette 為可選</li>
+            <li>最高舒適：黑屏過場</li>
+            <li>Quest: 90fps / PCVR: 120fps</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== SCENE 0 ==================== -->
+<div class="scene-section" id="scene0">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S0</span>
+    <span class="scene-title">黑暗中醒來</span>
+    <span class="scene-meta">90 秒</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag shock">震撼</span>
+      <span class="emotion-tag unease">不安</span>
+    </div>
+    <div class="note-block">Gameplay: 無（純感官體驗）&mdash; 直接進入遊戲，不跳選單</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">場景視覺</div>
+          <div class="detail-text">全黑但有空間感。唯一可見元素為左下角黃銅壓力錶作為載入指示。</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">壓力錶設計規格</div>
+          <div class="detail-text">
+            <ul>
+              <li>錶殼直徑：8cm</li>
+              <li>材質：黃銅拋光 + 氧化綠斑（Patina）</li>
+              <li>玻璃表面：裂紋從 2 點鐘方向延伸至中心</li>
+              <li>刻度：花體英文 PSI 刻度</li>
+              <li>銅指針：非線性攀升，最終停在 80-90（非 100）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">龐克元素</div>
+          <div class="detail-text">
+            <span class="punk-tag punk-steam">蒸氣龐克</span> 黃銅壓力錶本體 + 第 30 秒蒸氣排放白色粒子效果
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">五層聲景時間軸</div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <span class="time-mark">0-5s</span> &mdash; <strong>Layer 1: 水滴擊金屬</strong><br>
+              方位：左前上方 45&deg;，距離 10-15m<br>
+              節奏：不規則 2-4 秒間隔<br>
+              音色：擊中瞬間 50ms + 金屬共振 800ms + 迴音 2-3 秒
+            </div>
+            <div class="timeline-item">
+              <span class="time-mark">5-15s</span> &mdash; <strong>Layer 2: 變形風</strong><br>
+              路徑：右後 &rarr; 頭頂 &rarr; 左前<br>
+              頻率：800-1200Hz 口哨聲<br>
+              型態：間歇脈動
+            </div>
+            <div class="timeline-item">
+              <span class="time-mark">15-30s</span> &mdash; <strong>Layer 3: 機械嗡鳴</strong><br>
+              頻率：30-50Hz，來自腳下<br>
+              第 30 秒：手柄脈搏開始 &mdash; 1.2Hz，振幅從 0 漸增到 20%<br>
+              意義：<strong>灰燈寨的心跳</strong>
+            </div>
+            <div class="timeline-item">
+              <span class="time-mark">30-50s</span> &mdash; <strong>Layer 4: 金屬呼吸</strong><br>
+              鋼纜嗡聲（左上 20m）+ 鐵皮吱嘎（右 5m）+ 高處搖晃嗒嗒嗒（30m）<br>
+              蒸氣排放嘶嘶（右前 15m，每 20 秒一次）
+            </div>
+            <div class="timeline-item">
+              <span class="time-mark">50-70s</span> &mdash; <strong>Layer 5: 人的痕跡</strong><br>
+              極遠 50m+ 處傳來粵語收音機，持續約 5 秒
+            </div>
+            <div class="timeline-item">
+              <span class="time-mark">70-90s</span> &mdash; <strong>五層匯合</strong><br>
+              所有層同時存在，壓力錶達到 85，直接進入遊戲（不跳選單）
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMMING -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">觸覺回饋 Haptics</div>
+          <div class="detail-text">
+            第 30 秒起手柄低頻脈搏，頻率 1.2Hz，振幅從 0% 漸增至 20%。此為「灰燈寨心跳」，作為遊戲的基礎觸覺主題。
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">載入整合</div>
+          <div class="detail-text">
+            壓力錶指針非線性攀升對應實際載入進度。90 秒結束時直接進入 Scene 1，不顯示選單。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNING -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 敘事
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">敘事功能</div>
+          <div class="detail-text">
+            無台詞、無 UI。純感官導入建立空間規模感與不安氛圍。第 50 秒的遠處粵語收音機暗示：這裡還有人住。
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">他者存在跡象</div>
+          <div class="presence-marker">#0 第 50 秒遠處粵語收音機</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 1 ==================== -->
+<div class="scene-section" id="scene1">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S1</span>
+    <span class="scene-title">仰望灰燈寨</span>
+    <span class="scene-meta">4-5 分鐘</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag shock">震撼</span>
+      <span class="emotion-tag unease">不安</span>
+      <span class="emotion-tag curiosity">好奇</span>
+    </div>
+    <div class="note-block">Gameplay: 撕塑膠帶 &times;2 + 推柵門（手部互動教學）&mdash; 開頭 30 秒自由凝視不催促</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Layer 1: 近景 (0-15m)</div>
+          <div class="detail-text">
+            <ul>
+              <li>水泥鐵皮基底環境</li>
+              <li>「榮記五金」招牌</li>
+              <li>信箱標示「G/F Unit 3」</li>
+              <li><strong>雙套管線（核心美術）：</strong><br>
+                <span class="punk-tag punk-steam">蒸氣龐克</span> 黃銅花紋管線，六瓣花裝飾，壓力錶微顫，蒸氣洩漏白煙<br>
+                <span class="punk-tag punk-diesel">柴油龐克</span> 廢料拼接管線，大鉚釘，不同來源金屬焊接
+              </li>
+              <li>蠟筆塗鴉（高度 80cm &mdash; 兒童視角）：高樓 + 蛇狀管線 + 火柴人 + 太陽</li>
+              <li>殖民花磚地面</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">Layer 2: 中景 (15-50m)</div>
+          <div class="detail-text">
+            <ul>
+              <li>吊樓、窄橋、曬台</li>
+              <li>出前一丁晾夾 + 人字拖</li>
+              <li>窗口光三色：鎢絲黃（殖民）/ 燭火橘（自然）/ LED 白（現代）</li>
+              <li>霓虹招牌：「廿四小時維修」</li>
+              <li>巨大蒸氣主管 <span class="punk-tag punk-steam">蒸氣龐克</span>：銅綠優雅 + 渦卷支架 + 上方棚屋利用餘溫</li>
+              <li>白被單（今天洗的 &mdash; 生活感）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">Layer 3: 遠景 (50m+)</div>
+          <div class="detail-text">
+            <ul>
+              <li>大氣霧（體積霧）</li>
+              <li>傾斜結構（不安感）</li>
+              <li>蒸氣排放口噴白柱 &mdash; 「城寨毛孔冒汗」</li>
+              <li>遠處應力聲</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROG -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">互動 A: 撕塑膠帶 &times;2</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>接近封鎖線（15cm 範圍觸發）&rarr; 微振提示</li>
+              <li>握拳抓取</li>
+              <li>拉扯 &mdash; 繃緊吱吱聲 + 觸覺阻力漸增</li>
+              <li>啪！斷裂 &mdash; 碎片飄落粒子</li>
+            </ol>
+            <div class="note-block">
+              <strong>教學設計：</strong>第一條塑膠帶有彈性（需要用力），第二條一拉就斷 &mdash; 教會玩家「材質影響觸感」。
+            </div>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">互動 B: 推柵門</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>雙手抓橫桿（3cm 鏽蝕觸感）</li>
+              <li>前半段：巨大阻力，金屬刮水泥聲</li>
+              <li>鏽壓碎 &rarr; 阻力減 60%</li>
+              <li>順暢滑動 &rarr; 撞到門檔</li>
+              <li>罐頭掉落 4 秒音效鏈：0s 叮 &rarr; 0.3s 噹 &rarr; 0.5-3s 滾動 &rarr; 3.5s 碰牆叩</li>
+              <li>環境音降低 30%（對比反差）</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">撕塑膠帶音效</div>
+          <div class="detail-text">繃緊吱吱聲（漸強）&rarr; 啪斷（瞬態衝擊）&rarr; 碎片飄落（微小沙沙）</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">推柵門音效</div>
+          <div class="detail-text">金屬刮水泥（持續低頻摩擦）&rarr; 鏽壓碎（顆粒質感）&rarr; 順暢（減弱）&rarr; 撞門檔（衝擊）&rarr; 罐頭掉落鏈</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">環境聲</div>
+          <div class="detail-text">三層窗口光對應三種光暈。蒸氣管線持續低嘶。遠處應力聲金屬吱嘎。門推開後環境降 30% 創造靜默反差。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 對白
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Archer 對白</div>
+          <div class="dialogue-line">"Every time I look at this place, I keep thinking it'll finally fall apart."</div>
+          <div class="dialogue-line">"Thirty years of thinking that. Starting to feel like the punchline is on me."</div>
+          <div class="dialogue-line">"Floor number says 'unknown'. That's reassuring. Love a good mystery before my morning tea."</div>
+          <div class="dialogue-line">"Someone had taste. Vita Soy. The original, not the low-sugar rubbish."</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">他者存在跡象</div>
+          <div class="presence-marker">#1 封鎖線外側新鮮腳印 + 剪斷的鐵絲網</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 2 ==================== -->
+<div class="scene-section" id="scene2">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S2</span>
+    <span class="scene-title">水巷穿越</span>
+    <span class="scene-meta">12-15 分鐘</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag lowkey">低壓探索</span>
+      <span class="emotion-tag focus">小專注</span>
+      <span class="emotion-tag shock">驚</span>
+      <span class="emotion-tag curiosity">探索</span>
+      <span class="emotion-tag choice">選擇</span>
+    </div>
+    <div class="note-block">Gameplay: 傳送教學 + 閘門謎題（插銷配重）+ 路線選擇（攀爬 vs 升降機）</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">水巷環境</div>
+          <div class="detail-text">
+            <ul>
+              <li>2m 寬水巷，延伸 30m 後拐彎</li>
+              <li>10cm 積水：油光灰綠色</li>
+              <li>水下物件：人字拖 / 梅林罐 / 陽光茶 / 八卦週刊 / 剪刀</li>
+              <li>天花板滴水（節拍器功能）</li>
+              <li>管線上掛著臘腸、臘肉、鹹魚</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">閘門謎題美術</div>
+          <div class="detail-text">
+            <span class="punk-tag punk-steam">蒸氣龐克</span> 黃銅齒輪箱：花紋鑄鐵蕨葉浮雕、皇冠品牌、觀察窗可見內部齒輪<br>
+            <span class="punk-tag punk-diesel">柴油龐克</span> 配重系統：粗鐵鏈（不同來源拼接）+ 水泥塊（模板紋路）+ 工業鑄鐵滑輪
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">世界觀道具</div>
+          <div class="detail-text">
+            <ul>
+              <li>紅管幫標記（噴漆）</li>
+              <li>「鹽 $2 糖 $3」手寫牌</li>
+              <li>毒品加工點（化學瓶 + 燒焦鋁箔）</li>
+              <li>油桶路燈 + 價格表：梅林換電池 / 出前一丁換士巴拿</li>
+              <li>推車上蟑螂</li>
+              <li>粉筆跳房子</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">路線選擇美術</div>
+          <div class="detail-text">
+            焊死閘門：「不准開」+「SEALED BY ORDER」<br>
+            <strong>左路（攀爬）：</strong>管線攀爬 3 抓取點，老祁標記引導<br>
+            <strong>右路（升降機）：</strong><span class="punk-tag punk-diesel">柴油龐克</span> 鐵箱 + <span class="punk-tag punk-steam">蒸氣龐克</span> 殖民黃銅花紋齒輪棘輪
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">棚屋環境道具</div>
+          <div class="detail-text">
+            <ul>
+              <li>梅林罐頭</li>
+              <li>金庸《射鵰英雄傳》</li>
+              <li>銀行日曆</li>
+              <li>煲仔飯剪報</li>
+              <li>防水布床</li>
+              <li>萬寶路仿冒品</li>
+              <li>正字記號 100 天 +「阿英生日」</li>
+              <li>煲仔爐 + 維他奶 + 陽光茶</li>
+              <li>鐵蓋儲物洞（出前一丁 + 雙飛人 + 繃帶 + 摺刀）</li>
+              <li>門框辟邪物</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">天台</div>
+          <div class="detail-text">3-4m 溫和恐高。側巷 LED 種菜 <span class="punk-tag punk-cyber">賽博龐克</span></div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">過渡通道</div>
+          <div class="detail-text">
+            <ul>
+              <li>1.5m 低矮通道（觸發本能低頭）</li>
+              <li>「GOVERNMENT PROPERTY &mdash; 政府物業」標示</li>
+              <li>鋼印「SEC.7 COL.14」</li>
+              <li>蒸氣管線黃銅安全閥：每 30 秒噴出拳頭大蒸氣</li>
+              <li>走出後：土地公位「保佑平安」「保佑水管別再爆」</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROG -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">首次傳送（全遊戲最重要的傳送）</div>
+          <div class="detail-text">
+            <strong>光圈視覺：</strong>水面漣漪效果，2700K 暖色 + 油光彩虹<br>
+            <strong>過渡：</strong>0.3 秒 Vignette 70%<br>
+            <strong>落地視覺：</strong>水花有方向性（15cm 範圍）+ 牆面水痕 + 漣漪碰壁反射 + 漂浮物被推動 3-4 秒<br>
+            <strong>落地聲音：</strong>咚（100-200Hz）+ 嘩（500-1500Hz）+ 噼啪（2000-5000Hz）+ 迴音<br>
+            <strong>落地觸覺：</strong>中等力度，50ms 軟衝擊 + 0.3 秒微震
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">傳送變體</div>
+          <div class="detail-text">
+            <ul>
+              <li><strong>靠牆傳送：</strong>濺牆更多</li>
+              <li><strong>深水區傳送：</strong>更沉、更強回饋</li>
+              <li><strong>踩沉底物：</strong>硬物回饋</li>
+              <li><strong>乾燥處傳送：</strong>聲音突變（對比反差）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">閘門謎題機制（約 3 分鐘）</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>找到鑄鐵插銷穿孔位</li>
+              <li>拔出插銷 &mdash; 冰冷粗糙觸感、強阻力、嘶聲</li>
+              <li>齒輪彈簧釋放 &mdash; 黃銅精密咔嗒嗒嗒</li>
+              <li>配重落下 &mdash; 鐵鏈嘩啦 + 摩擦 + 碰撞</li>
+              <li>閘門升起 &mdash; 液壓咔嗡</li>
+              <li>水流湧過帶漂浮物</li>
+            </ol>
+            <div class="note-block">閘門前後水體體驗不同：前方死水 vs 後方有流動。</div>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">路線選擇</div>
+          <div class="detail-text">
+            <strong>左路（快）：</strong>管線攀爬 3 個抓取點，老祁標記引導<br>
+            <strong>右路（慢但爽）：</strong>找黃銅把手 &rarr; 插入齒輪箱 &rarr; 搖 10 圈（每圈 20cm + 精密嗒嗒 + 棘輪喀）
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">傳送落地音效分層</div>
+          <div class="detail-text">
+            <ul>
+              <li>咚（100-200Hz）&mdash; 水體衝擊基頻</li>
+              <li>嘩（500-1500Hz）&mdash; 水花飛濺</li>
+              <li>噼啪（2000-5000Hz）&mdash; 水珠碎裂</li>
+              <li>迴音 &mdash; 空間反射</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">閘門音效鏈</div>
+          <div class="detail-text">
+            拔插銷嘶聲 &rarr; 齒輪精密咔嗒嗒嗒 <span class="punk-tag punk-steam">蒸氣龐克</span> &rarr; 鐵鏈嘩啦碰撞 <span class="punk-tag punk-diesel">柴油龐克</span> &rarr; 液壓咔嗡 &rarr; 水流湧入
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">過渡通道音效</div>
+          <div class="detail-text">遠處粵語哼歌。蒸氣安全閥每 30 秒噴放。過渡後：脈搏開始。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 對白
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Archer 對白</div>
+          <div class="dialogue-line">"Cooking. And I don't mean dinner..."</div>
+          <div class="dialogue-line">"This wiring... I know this. 老莫..."</div>
+          <div class="dialogue-line">"At least someone's still living here rent-free."</div>
+          <div class="dialogue-line">"British engineering meets 城寨 DIY..."</div>
+          <div class="dialogue-line">"阿灰. At least the cat has a name..."</div>
+          <div class="dialogue-line">"Manual labour. The original renewable energy."</div>
+          <div class="dialogue-line">"Right. Engine oil, rust, and someone's dinner. The holy trinity of Graylight."</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">他者存在跡象</div>
+          <div class="presence-marker">#2 暗巷：手電筒光移動 &rarr; 滅 &rarr; 腳步嗒嗒嗒離去 &rarr; 水面波紋</div>
+          <div class="detail-text" style="margin-top:0.4rem;">
+            噴漆箭頭代碼 + 十字架標記。遠處收音機被關掉。
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">他者存在跡象</div>
+          <div class="presence-marker">#3 灰貓：金屬叩叩叩 &rarr; 5 秒 &rarr; 灰貓掠過水面鑽牆洞</div>
+          <div class="detail-text" style="margin-top:0.4rem;">
+            公雞碗乾飯魚骨 + 粉筆「阿灰」+ 乾淨水盆 + 紅毛線
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 3 ==================== -->
+<div class="scene-section" id="scene3">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S3</span>
+    <span class="scene-title">低層配電室</span>
+    <span class="scene-meta">15-18 分鐘</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag tension">緊張上升</span>
+      <span class="emotion-tag focus">專注</span>
+      <span class="emotion-tag release">釋放</span>
+    </div>
+    <div class="note-block">Gameplay: 收音機互動 + 謎題 1 主迴路重啟（固定裝置教學）</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">走廊環境</div>
+          <div class="detail-text">
+            <ul>
+              <li>1.5m 寬走廊</li>
+              <li>天花板：蒸氣銅管 &times; 柴油鐵管交織</li>
+              <li>黃銅三通閥某口被鐵瓶蓋鉚死（蒸氣 &times; 柴油接縫）</li>
+              <li>大型蒸氣主管安全閥排放嘶嘶 + 下方小水坑</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">公告板</div>
+          <div class="detail-text">
+            自治委員會第 47 次供水決議 + 紅筆吐槽 + 英文恐嚇信 + 陳太尋人
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">五扇門</div>
+          <div class="doors-grid">
+            <div class="door-card">
+              <div class="door-num">門 &#8470;1 &mdash; 開著</div>
+              <div class="door-desc">公雞碗 + 筷子 + 茶餐廳杯 + 蠟筆畫 + 港星海報 + 黑布鞋朝門口<br>
+              角落：<span class="punk-tag punk-steam">蒸氣龐克</span> 收音機 &mdash; 木殼、黃銅旋鈕、頻率紙卷（HONG KONG / MACAU / CANTON）、真空管橙光</div>
+            </div>
+            <div class="door-card">
+              <div class="door-num">門 &#8470;2 &mdash; 關著沒鎖</div>
+              <div class="door-desc">春聯 + 倒福 + 銅錢 + 八卦鏡 + 自寫符 + 辟邪物</div>
+            </div>
+            <div class="door-card">
+              <div class="door-num">門 &#8470;3 &mdash; 關著有光</div>
+              <div class="door-desc">煲仔飯味飄出 &rarr; 推門被拒 &rarr; 光消失<br>
+              <em style="color:var(--text-muted);">（有人在黑暗中等你離開）</em></div>
+            </div>
+            <div class="door-card">
+              <div class="door-num">門 &#8470;4 &mdash; 焊死</div>
+              <div class="door-desc">「已清」標記 + 指甲刮痕 4-5 道<br>
+              <em style="color:var(--text-muted);">（阿徹嘴張了閉上 &mdash; 某些東西連黑色幽默都覆蓋不了）</em></div>
+            </div>
+            <div class="door-card">
+              <div class="door-num">門 &#8470;5 &mdash; 沒有門板</div>
+              <div class="door-desc">煙燻痕跡 + 拖拽痕 + 紀念角（芳姐照片 + 香灰 + 關帝 + LED 蠟燭）</div>
+            </div>
+          </div>
+          <div class="detail-text" style="margin-top:0.5rem;">
+            <strong>走廊盡頭：</strong>紅色門簾 + 高跟鞋刮痕 + 紫紅色光
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">配電室</div>
+          <div class="detail-text">
+            金屬門上「ELECTRICAL PANEL ROOM / 配電室」<br>
+            工具箱裡老祁扳手 + 紙條「三號 panel 的 circuit breaker 又跳了（又 trip 咗）下次直接焊上去。&mdash;祁」
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">Panel 3 三時代美術</div>
+          <div class="detail-text">
+            <span class="punk-tag punk-steam">蒸氣龐克 &mdash; 殖民原裝</span> 黃銅外框葡萄藤齒輪紋 + 花紋鑄鐵 + 花瓣旋鈕 + 黃銅球形拉桿 + 微型鎢絲燈（黃銅蛋齒紋燈座）<br><br>
+            <span class="punk-tag punk-diesel">柴油龐克 &mdash; 替換模組</span> 粗糙鐵板 + 拼湊旋鈕 + 鉚釘<br><br>
+            <strong>自製廢料層：</strong>敲鐵皮 + 彈簧翹板 + 白漆手寫標籤<br><br>
+            旁邊：被撬保險箱（空的）+ 散落身份證
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">穩定裝置 Stabilizer（全遊戲核心工具）</div>
+          <div class="detail-text">
+            <ul>
+              <li>尺寸：15 &times; 8 &times; 5cm</li>
+              <li>外殼：多金屬拼接（鑄鐵 + 黃銅接口 + 銅片握把）</li>
+              <li>表面：5-6 裸露鉚釘不對稱 + 凹痕</li>
+              <li>儀表：黃銅錶殼（裂紋 1 點到 5 點方向，齒輪可見，銅指針，花體蝕刻非線性刻度）</li>
+              <li>旋鈕：大型黃銅滾花旋鈕</li>
+              <li>聚焦環：銅製，啟動時電磁嗡聲 + 琥珀色光暈（「場」非「光束」，影響範圍 30cm）</li>
+              <li>使用回饋：發熱，快結束時冒蒸氣</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROG -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">收音機互動</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>抓取旋鈕旋轉（阻力 + 刻度卡位嗒嗒嗒）</li>
+              <li>大部分頻率為雜訊</li>
+              <li>某個頻率 2-3 秒清晰：「政府發言人表示封鎖區的安全評估仍在進行中」</li>
+              <li>雜訊吞沒 &mdash; 頻率不可再現</li>
+            </ol>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">砸鎖進入配電室</div>
+          <div class="detail-text">
+            扳手砸鎖 &times;2：第一下「叮」（金屬衝擊），第二下「斷裂」（鎖心碎裂）
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">謎題 1：主迴路重啟</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>找到跳脫拉桿 &mdash; 第二排第三個朝下，雙語標籤，極小鉛筆字「祁」</li>
+              <li>直接推拉桿 &rarr; <strong>失敗</strong>（卡住，硬震動回饋）</li>
+              <li>使用固定裝置對準拉桿（5cm 內磁吸引導 &rarr; 按鈕 &rarr; 琥珀色穩定場 &rarr; 指針倒數滴答）</li>
+              <li>在穩定窗口內推拉桿：嗒嗒嗒上發條 &rarr; 中點咔 &rarr; 到位彈簧吸上去</li>
+            </ol>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">成功序列（連鎖反應）</div>
+          <div class="detail-text">
+            <div class="second-item"><span class="second-time">+0s</span><span class="second-desc">1 秒完全安靜</span></div>
+            <div class="second-item"><span class="second-time">+1s</span><span class="second-desc">嗒 &mdash; 殖民繼電器（清脆精密）</span></div>
+            <div class="second-item"><span class="second-time">+1.5s</span><span class="second-desc">嗒嗒嗒依序 &mdash; 黃銅燈座綠光（如翡翠）</span></div>
+            <div class="second-item"><span class="second-time">+2.5s</span><span class="second-desc">柴油龐克模組啟動（粗糙、沉悶）</span></div>
+            <div class="second-item"><span class="second-time">+3.5s</span><span class="second-desc">自製模組（咔啦，不精確但更有力）</span></div>
+            <div class="second-item"><span class="second-time">+4s</span><span class="second-desc">走廊燈連鎖亮起 &mdash; 每盞 0.2 秒漸亮 + 燈絲震動 &rarr; 光帶骨牌效果</span></div>
+            <div class="second-item"><span class="second-time">持續</span><span class="second-desc">手柄脈搏從雜訊變穩定心跳</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">收音機音效</div>
+          <div class="detail-text">旋鈕卡位嗒嗒嗒 + 雜訊白噪 + 偶然清晰語音片段 + 真空管橙光對應信號</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">固定裝置音效</div>
+          <div class="detail-text">電磁嗡聲（啟動）+ 指針倒數滴答（穩定窗口）+ 快結束蒸氣噴放</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">成功序列三時代音效</div>
+          <div class="detail-text">
+            <ul>
+              <li><span class="punk-tag punk-steam">殖民繼電器</span> 清脆、精密、高頻嗒</li>
+              <li><span class="punk-tag punk-diesel">柴油模組</span> 粗糙、沉悶、低頻轟</li>
+              <li><strong>自製模組</strong> 咔啦，不精確但更有力量感</li>
+              <li>走廊燈骨牌：每盞漸亮配微弱電弧聲</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 對白
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Archer 對白</div>
+          <div class="dialogue-line">"Jammed. Of course..."</div>
+          <div class="dialogue-line">"煲仔飯. The claypot kind..."
+            <span class="direction">（門 &#8470;3 飄出煲仔飯味時）</span>
+          </div>
+          <div class="dialogue-line">"All right. Not bothering you..."
+            <span class="direction">（門 &#8470;3 推門被拒後）</span>
+          </div>
+          <div class="dialogue-line">"Still 'assessing'..."
+            <span class="direction">（收音機播報後）</span>
+          </div>
+          <div class="dialogue-line">"Percussive maintenance. My specialty."
+            <span class="direction">（砸鎖時）</span>
+          </div>
+          <div class="dialogue-line">"Come on, old girl. Do your thing."
+            <span class="direction">（使用固定裝置時）</span>
+          </div>
+          <div class="dialogue-line">"Still works. Victorian engineering..."
+            <span class="direction">（成功後看殖民繼電器）</span>
+          </div>
+          <div class="dialogue-line">"Every floor has a story. Some you read. Some you don't."
+            <span class="direction">（經過門 &#8470;4 後）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 4 ==================== -->
+<div class="scene-section" id="scene4">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S4</span>
+    <span class="scene-title">斷裂梯井</span>
+    <span class="scene-meta">12-15 分鐘</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag tension">緊張</span>
+      <span class="emotion-tag fear">恐深</span>
+      <span class="emotion-tag action">行動壓力</span>
+      <span class="emotion-tag satisfy">滿足</span>
+    </div>
+    <div class="note-block">Gameplay: 搭橋 + 雙窗口固定 + 連鎖傳送 + 蒸氣門鎖</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">梯井環境</div>
+          <div class="detail-text">
+            <ul>
+              <li>方形垂直梯井</li>
+              <li>雙語門牌「3/F &mdash; 三樓」</li>
+              <li>蒸氣管線沿垂直攀升：黃銅主管 + 每層壓力錶 + 排放閥</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">斷裂缺口</div>
+          <div class="detail-text">
+            ~3m 缺口，氣焊切割痕跡（藍紫氧化色 = 故意拆除）<br>
+            對面標示：「機房層 ENGINE ROOM LEVEL」+ 粉筆圓圈一橫
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">鐵板</div>
+          <div class="detail-text">
+            「SCAFFOLDING &mdash; MAX LOAD 250KG」，2m &times; 30cm
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">蒸氣門鎖</div>
+          <div class="detail-text">
+            門框：<span class="punk-tag punk-steam">蒸氣龐克</span> 黃銅汽缸（8 &times; 20cm 花紋品牌）+ 活塞桿 &rarr; 門閂<br>
+            控制：蒸氣管線上黃銅蝶形閥（花紋蝶翼 + 銅 T 把手），初始關閉，壓力錶為零
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROG -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">搭橋</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>雙手拖鐵板（金屬刮水泥在梯井放大成嘯叫）</li>
+              <li>架到對面 &mdash; 噹（金屬撞擊）</li>
+              <li>固定兩塊梯板（雙窗口 &mdash; 兩個倒數滴答交疊 + 裝置冒蒸氣）</li>
+            </ol>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">連鎖傳送（3 點）</div>
+          <div class="detail-text">
+            <ul>
+              <li><strong>點 1（鐵板前 1/3）：</strong>鐵板彎曲 1-2cm + 轟嗡 + 強震 200ms + 持續顫抖</li>
+              <li><strong>點 2（中段）：</strong>梯板嘎吱衰減 + 不規則脈衝 + 光圈抖動</li>
+              <li><strong>點 3（安全平台）：</strong>水泥沉實（安全落地）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">鐵板墜落序列（6-8 秒）</div>
+          <div class="detail-text">
+            <div class="second-item"><span class="second-time">0s</span><span class="second-desc">嘎 &mdash; 鬆脫</span></div>
+            <div class="second-item"><span class="second-time">0-1s</span><span class="second-desc">翻轉墜入</span></div>
+            <div class="second-item"><span class="second-time">1s</span><span class="second-desc">碰牆巨響</span></div>
+            <div class="second-item"><span class="second-time">2s</span><span class="second-desc">彈開</span></div>
+            <div class="second-item"><span class="second-time">3s</span><span class="second-desc">碰另一面牆</span></div>
+            <div class="second-item"><span class="second-time">3-6s</span><span class="second-desc">漸遠（聲音衰減）</span></div>
+            <div class="second-item"><span class="second-time">6s</span><span class="second-desc">落水 &mdash; 咚（手柄極微震）</span></div>
+            <div class="second-item"><span class="second-time">7s</span><span class="second-desc">迴音</span></div>
+            <div class="second-item"><span class="second-time">8s</span><span class="second-desc">無聲</span></div>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">蒸氣門鎖機制</div>
+          <div class="detail-text">
+            邏輯：開閥 &rarr; 蒸氣進入 &rarr; 推活塞 &rarr; 門閂退開 &rarr; 解鎖<br><br>
+            <ol class="step-list">
+              <li>旋轉蝶形閥 90&deg;（黃銅平滑阻力）</li>
+              <li>嘶嘶 &mdash; 蒸氣進入汽缸</li>
+              <li>壓力錶指針上升</li>
+              <li>活塞縮回（玩家可見整個過程）</li>
+              <li>咔噠 &mdash; 門閂退開</li>
+              <li>管線噴白霧（暖的 &mdash; 手柄升溫）</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">梯井聲學</div>
+          <div class="detail-text">方形垂直結構放大所有聲音。拖動鐵板的刮擦聲在梯井中變成嘯叫。</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">墜落音效</div>
+          <div class="detail-text">8 秒漸遠碰撞鏈：金屬翻轉 &rarr; 碰牆巨響（迴音）&rarr; 彈開 &rarr; 再碰 &rarr; 漸遠 &rarr; 落水咚 &rarr; 深層迴音 &rarr; 寂靜</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">蒸氣門鎖音效</div>
+          <div class="detail-text">旋閥平滑摩擦 &rarr; 嘶嘶蒸氣入管 &rarr; 活塞機械滑動 &rarr; 咔噠鎖退 &rarr; 白霧噴放</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 對白
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Archer 對白</div>
+          <div class="dialogue-line">"That's... about seven storeys of absolutely nothing..."</div>
+          <div class="dialogue-line">"Not even a wave. Rude."
+            <span class="direction">（聲音更輕 &mdash; 看到人影離開後）</span>
+          </div>
+          <div class="dialogue-line">"Two-fifty. I'm under that. Probably. If I skip lunch. Which I have."</div>
+          <div class="dialogue-line">"Don't look down. Don't look down. Don't&mdash;"</div>
+          <div class="dialogue-line">"Well. That's one way to make sure I don't change my mind... Commitment."
+            <span class="direction">（鐵板墜落後）</span>
+          </div>
+          <div class="dialogue-line">"Steam-powered door lock. Because a regular lock would've been too simple..."</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">他者存在跡象</div>
+          <div class="presence-marker">#6 上方約四層，逆光暖黃輪廓，低頭看玩家，3 秒後退後消失，無聲</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCENE 5 ==================== -->
+<div class="scene-section" id="scene5">
+  <div class="scene-header" onclick="toggleSection(this)">
+    <span class="scene-number">S5</span>
+    <span class="scene-title">機房與電梯啟動</span>
+    <span class="scene-meta">15-18 分鐘</span>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path d="M7 5l5 5-5 5z"/></svg>
+  </div>
+  <div class="scene-body">
+    <div class="emotion-bar">
+      <span class="emotion-tag awe">敬畏</span>
+      <span class="emotion-tag focus">專注</span>
+      <span class="emotion-tag climax">全章高潮</span>
+      <span class="emotion-tag hook">驚悚鉤子</span>
+    </div>
+    <div class="note-block">Gameplay: 啟動前檢查 &times;3 + 啟動序列 &times;3 + 電梯門控</div>
+
+    <!-- ART -->
+    <div class="role-block role-art open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 美術 Art
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">引擎視覺（規模比實際大得多）</div>
+          <div class="detail-text">
+            <span class="punk-tag punk-diesel">柴油龐克</span>「大就是力量」美學<br><br>
+            <strong>底座 = 蒸氣龐克殖民原裝</strong><br>
+            <ul>
+              <li>花紋鑄鐵底座 + 維多利亞渦卷裝飾</li>
+              <li>黃銅閥門手輪雕花</li>
+              <li>8-10 個黃銅壓力錶（全部指針躺在零）</li>
+              <li>銘牌被油漬蓋住</li>
+            </ul>
+            <br>
+            <strong>外面 = 柴油龐克改裝</strong><br>
+            <ul>
+              <li>粗暴鑄鐵大鉚釘</li>
+              <li>十幾個齒輪傳動鏈（全可見、全靜止）</li>
+              <li>1m 飛輪</li>
+              <li>油壓管纏繞滲油</li>
+            </ul>
+            <br>
+            基座上：碎香爐 +「開工大吉」紅包
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">機房環境</div>
+          <div class="detail-text">
+            <ul>
+              <li>更衣櫃 5 個：&#9312; 名字塗抹 + 夜班路線 &#9313; 鎖孔堵死 &#9314; 老祁士巴拿紙條 &#9315;&#9316;</li>
+              <li>拆半無線電</li>
+              <li>《東方日報》</li>
+              <li>英文手冊（阿徹碰到封面收回手："Dad..."）</li>
+              <li>4 個 CRT 螢幕雪花屏 <span class="punk-tag punk-cyber">賽博龐克</span></li>
+              <li>油漬小水窪 = 黑色鏡子</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">電梯</div>
+          <div class="detail-text">
+            <ul>
+              <li>門楣：「CENTRAL LIFT &mdash; 中央升降機」黃銅字母</li>
+              <li>井道逐層亮起 + 內壁齒輪如垂直鐘錶</li>
+              <li>面板雙語：「G/F 地下」「1/F 一樓」英式</li>
+              <li>轎廂刻字：「陳志明到此一遊」「I was here &mdash; 1997」</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROG -->
+    <div class="role-block role-prog open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 程式 Programming
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">啟動前檢查（約 3 分鐘）</div>
+          <div class="detail-text">
+            <strong>&#9312; 油位檢查</strong><br>
+            黃銅油尺（花紋握柄）&rarr; 拉出（滑順嘶聲）&rarr; 花體 MIN/MAX &rarr; 偏低可接受 &rarr; 插回咔噠<br><br>
+            <strong>&#9313; 冷卻水檢查</strong><br>
+            黃銅水箱蓋「CAUTION &mdash; HOT」&rarr; 旋開（氣壓嘶 + 殘餘蒸氣）&rarr; 水面鏽色 &rarr; 蓋回<br><br>
+            <strong>&#9314; 皮帶檢查</strong><br>
+            橡膠帆布 5cm 寬 &rarr; 按壓（彈性下沉 2cm 彈回）&rarr; 龜裂但完整
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">啟動序列</div>
+          <div class="detail-text">
+            <strong>&#9312; 燃料供應</strong><br>
+            黃銅大旋鈕「FUEL SUPPLY」&rarr; 雙手旋前半圈（鏽蝕嘎吱）&rarr; 突然鬆了（阻力減 70%）&rarr; 柴油古嚕聲 &rarr; 透明油管液體氣泡 &rarr; 壓力錶精密滴答 &rarr; 咔噠<br><br>
+            <strong>&#9313; 預熱</strong><br>
+            鑄鐵按鈕 + 黃銅溫度計（華氏刻度）&rarr; 按住 &rarr; 黃色 5 秒（叮噹金屬膨脹）&rarr; 繼續按住（蒸氣從縫隙如呼吸）&rarr; 綠色啪鎖定<br><br>
+            <strong>&#9314; 主拉桿</strong><br>
+            <span class="punk-tag punk-steam">蒸氣龐克</span> 底座 + <span class="punk-tag punk-diesel">柴油龐克</span> 桿體（接縫可見）&rarr; 磨光球形握柄 &rarr; 巨大阻力 &rarr; 臨界消失 &rarr; 砰到底
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">引擎啟動（逐秒 12 秒序列）</div>
+          <div class="detail-text">
+            <div class="second-item"><span class="second-time">0s</span><span class="second-desc">猛烈震動（手柄 300ms，全遊戲最強單次）+ 地板微彈 + 螺栓叮</span></div>
+            <div class="second-item"><span class="second-time">0.5s</span><span class="second-desc">沉默 &mdash; 沒著</span></div>
+            <div class="second-item"><span class="second-time">1s</span><span class="second-desc">第一聲咳（乾澀）+ 黑煙 + 蒸氣嘶</span></div>
+            <div class="second-item"><span class="second-time">1.5s</span><span class="second-desc">沉默</span></div>
+            <div class="second-item"><span class="second-time">2s</span><span class="second-desc">咳咳，更有力</span></div>
+            <div class="second-item"><span class="second-time">2.5s</span><span class="second-desc">轟 &mdash;&mdash; 點火！（柴油爆燃，工業級甦醒）</span></div>
+            <div class="second-item"><span class="second-time">3-8s</span><span class="second-desc">三頻段齒輪交響：小黃銅 800-1200Hz &rarr; 中鑄鐵 300-500Hz &rarr; 大鑄鐵 100-200Hz + 咬合點油飛濺如琥珀流星</span></div>
+            <div class="second-item"><span class="second-time">5-10s</span><span class="second-desc">壓力錶指針一個個彈起 + 安全閥嘶嘶不同節拍</span></div>
+            <div class="second-item"><span class="second-time">8-12s</span><span class="second-desc">1m 飛輪加速：灰塵螺旋 + 邊緣光圈 + 空氣被拖動感</span></div>
+            <div class="second-item"><span class="second-time">持續</span><span class="second-desc">機房燈隨轉速呼吸</span></div>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">觸覺序列</div>
+          <div class="detail-text">
+            <ul>
+              <li><strong>0s：</strong>最強單次衝擊（300ms）</li>
+              <li><strong>1-2s：</strong>沉默反差（什麼都沒有 &mdash; 焦慮）</li>
+              <li><strong>2.5s：</strong>嗒嗒嗒加速</li>
+              <li><strong>8s：</strong>融合為持續低頻</li>
+              <li><strong>此後：</strong>新基準線（引擎穩定運轉觸覺）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">銘牌揭示</div>
+          <div class="detail-text">
+            引擎震動掉落油漬 &rarr; 手指擦拭 &rarr; 一字一字顯現：「MANUFACTURED IN BIRMINGHAM, ENGLAND」+ 19 世紀末年份
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">電梯操作</div>
+          <div class="detail-text">
+            <ol class="step-list">
+              <li>固定裝置對準門控</li>
+              <li>拉門（極重 &rarr; 卡住 &rarr; 爆發力 &rarr; 順暢）</li>
+              <li>面板操作（英式雙語樓層按鈕）</li>
+            </ol>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">異常事件</div>
+          <div class="detail-text" style="color:var(--accent-rust);">
+            面板閃爍不在序列的編號（1 秒）&rarr; 全井道驟暗 &rarr; 鎢絲暗紅 &rarr; 脈搏錯拍 &rarr; 恢復
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="role-block role-audio open">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 音效 Audio
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">引擎啟動 12 秒音效分解</div>
+          <div class="detail-text">
+            <ul>
+              <li>0s：猛震機械衝擊 + 螺栓叮</li>
+              <li>0.5s：死寂</li>
+              <li>1s：乾咳 + 黑煙氣流 + 蒸氣嘶</li>
+              <li>2s：更有力咳嗽</li>
+              <li>2.5s：柴油爆燃轟鳴（低頻震撼）</li>
+              <li>3-8s：三頻段齒輪交響（小黃銅 800-1200Hz / 中鑄鐵 300-500Hz / 大鑄鐵 100-200Hz）</li>
+              <li>5-10s：壓力錶嗒嗒 + 安全閥嘶嘶（不同節拍）</li>
+              <li>8-12s：飛輪加速風切 + 空氣流動</li>
+              <li>持續：低頻引擎穩定運轉</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">電梯聲景</div>
+          <div class="detail-text">
+            殖民精密齒輪 + 城寨粗暴齒輪疊加 + 鋼纜 + 蒸氣<br>
+            極遠粵語爭論（拗頸）：「唔得」「點解」3 秒消失<br>
+            <strong>最後 2 秒：</strong>下方傳來「叩」一下 &mdash; 有意識的金屬敲擊<br>
+            <em style="color:var(--accent-rust);">（機房沒有其他人）</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="role-block role-plan">
+      <div class="role-block-header" onclick="toggleRole(this)">
+        <span class="role-icon"></span> 企劃 Planning / 對白
+        <span class="role-chevron">&#9654;</span>
+      </div>
+      <div class="role-block-body">
+        <div class="detail-group">
+          <div class="detail-label">Archer 對白</div>
+          <div class="dialogue-line">"Well. She's still here. Bigger than I remember. Or maybe I got smaller."</div>
+          <div class="dialogue-line">"And here I am, holding his 士巴拿. Circle of life."</div>
+          <div class="dialogue-line">"Dad..."
+            <span class="direction">（極輕，可能錯過 &mdash; 碰到英文手冊封面時）</span>
+          </div>
+          <div class="dialogue-line">"Haven't been fired up in... a while..."</div>
+          <div class="dialogue-line">"Low but workable. Story of my life."
+            <span class="direction">（油位檢查）</span>
+          </div>
+          <div class="dialogue-line">"Water's the colour of tea..."
+            <span class="direction">（冷卻水檢查）</span>
+          </div>
+          <div class="dialogue-line">"Belt's still got some life..."
+            <span class="direction">（皮帶檢查）</span>
+          </div>
+          <div class="dialogue-line">"Fuel valve... open. She's drinking."
+            <span class="direction">（燃料供應）</span>
+          </div>
+          <div class="dialogue-line">"Come on... Preheat done. She's warming up. Like a cat on a radiator."
+            <span class="direction">（預熱完成）</span>
+          </div>
+          <div class="dialogue-line">"Here goes nothing. Or here goes everything."
+            <span class="direction">（拉主拉桿前）</span>
+          </div>
+          <div class="dialogue-line">"British engine, Chinese blessing. Somehow she's still running."
+            <span class="direction">（引擎啟動成功）</span>
+          </div>
+          <div class="dialogue-line">"Like me."
+            <span class="direction">（最輕、最短 &mdash; 幾乎自言自語）</span>
+          </div>
+          <div class="dialogue-line">"... That wasn't on the floor plan."
+            <span class="direction">（異常事件後）</span>
+          </div>
+          <div class="dialogue-line">"So. Are you gonna exist or not?"
+            <span class="direction">（DEMO 倒數第二句 &mdash; 英文）</span>
+          </div>
+          <div class="dialogue-line" style="border-left-color:var(--accent-gold);background:rgba(197,162,88,0.06);">「給個準話。」
+            <span class="direction">（DEMO 最後一句 &mdash; 粵語。情感累積釋放，語言切換。）</span>
+          </div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-label">結尾設計</div>
+          <div class="detail-text">
+            電梯門關上，黑屏。聲景持續：殖民精密 + 城寨粗暴齒輪疊加 + 鋼纜 + 蒸氣。極遠粵語爭論 3 秒消失。最後 2 秒：下方有意識的金屬敲擊。<br>
+            <strong style="color:var(--accent-rust);">驚悚鉤子 &mdash; 機房沒有其他人。</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SENSORY SUMMARY ==================== -->
+<div class="ref-section" id="sensory">
+  <div class="ref-header" onclick="toggleRef(this)">
+    <span class="ref-icon">&#9654;</span>
+    全感官總表 Full Sensory Summary
+  </div>
+  <div class="ref-body">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>場景</th>
+          <th>時長</th>
+          <th>情緒</th>
+          <th>Gameplay</th>
+          <th>龐克元素</th>
+          <th>他者跡象</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>S0</strong> 黑暗中醒來</td>
+          <td>90s</td>
+          <td>震撼 &rarr; 不安</td>
+          <td>無（純感官）</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span> 壓力錶 + 蒸氣排放</td>
+          <td>#0 遠處粵語收音機</td>
+        </tr>
+        <tr>
+          <td><strong>S1</strong> 仰望灰燈寨</td>
+          <td>4-5min</td>
+          <td>震撼 &rarr; 不安 &rarr; 好奇</td>
+          <td>撕塑膠帶 &times;2 + 推柵門</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span><span class="punk-tag punk-diesel">柴油</span> 雙套管線</td>
+          <td>#1 腳印 + 剪鐵絲</td>
+        </tr>
+        <tr>
+          <td><strong>S2</strong> 水巷穿越</td>
+          <td>12-15min</td>
+          <td>低壓 &rarr; 專注 &rarr; 驚 &rarr; 選擇</td>
+          <td>傳送教學 + 閘門謎題 + 路線選擇</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span><span class="punk-tag punk-diesel">柴油</span><span class="punk-tag punk-cyber">賽博</span></td>
+          <td>#2 手電筒 + 腳步<br>#3 灰貓</td>
+        </tr>
+        <tr>
+          <td><strong>S3</strong> 低層配電室</td>
+          <td>15-18min</td>
+          <td>緊張 &rarr; 專注 &rarr; 釋放</td>
+          <td>收音機 + 主迴路重啟</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span><span class="punk-tag punk-diesel">柴油</span> 三時代 Panel</td>
+          <td>門 &#8470;3 有人在<br>門 &#8470;4 指甲刮痕</td>
+        </tr>
+        <tr>
+          <td><strong>S4</strong> 斷裂梯井</td>
+          <td>12-15min</td>
+          <td>緊張 &rarr; 恐深 &rarr; 滿足</td>
+          <td>搭橋 + 雙窗口 + 連鎖傳送 + 蒸氣門鎖</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span> 門鎖汽缸 + 蝶形閥</td>
+          <td>#6 逆光人影 4 層高</td>
+        </tr>
+        <tr>
+          <td><strong>S5</strong> 機房電梯</td>
+          <td>15-18min</td>
+          <td>敬畏 &rarr; 高潮 &rarr; 驚悚鉤子</td>
+          <td>檢查 &times;3 + 啟動 &times;3 + 電梯門控</td>
+          <td><span class="punk-tag punk-steam">蒸氣</span><span class="punk-tag punk-diesel">柴油</span><span class="punk-tag punk-cyber">賽博</span></td>
+          <td>異常閃爍 + 有意識敲擊</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== TELEPORT SYSTEM ==================== -->
+<div class="ref-section" id="teleport">
+  <div class="ref-header" onclick="toggleRef(this)">
+    <span class="ref-icon">&#9654;</span>
+    傳送系統設計 Teleport System
+  </div>
+  <div class="ref-body">
+    <div class="info-card">
+      <h4>設計哲學</h4>
+      <div class="detail-text">每次傳送 = 一次微體驗（預備 &rarr; 過渡 &rarr; 落地），總時長 0.5-1 秒。傳送不是「功能」，而是「感受」。</div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Phase 1: Pointing（指向）</div>
+      <div class="detail-text">
+        光圈根據材質不同呈現不同視覺：
+        <ul>
+          <li><strong>金屬表面：</strong>工業質感光圈</li>
+          <li><strong>水面：</strong>漣漪光圈 + 油光彩虹</li>
+          <li><strong>木板：</strong>木紋擴散光圈</li>
+          <li><strong>不穩定表面：</strong>光圈抖動</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Phase 2: Transition（過渡）</div>
+      <div class="detail-text">
+        <ul>
+          <li><strong>水平移動：</strong>Vignette 收縮</li>
+          <li><strong>向下移動：</strong>失重感</li>
+          <li><strong>向上移動：</strong>壓縮感</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">Phase 3: Landing（落地 0.3 秒反應）</div>
+      <div class="detail-text">
+        <ul>
+          <li><strong>金屬表面：</strong>鏈條擺動</li>
+          <li><strong>木板：</strong>吱嘎聲</li>
+          <li><strong>水面：</strong>水花 + 漣漪 + 漂浮物推動</li>
+          <li><strong>碎石：</strong>碎石聲 + 微粒</li>
+          <li><strong>靠近物件：</strong>物件搖晃</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-label">各區域傳送特色</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>區域</th><th>傳送特色</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>水巷 (S2)</td><td>水花漣漪為主，油光彩虹，漂浮物推動</td></tr>
+          <tr><td>走廊 (S2-S3)</td><td>水泥表面變化，門改變回音特性</td></tr>
+          <tr><td>配電室 (S3)</td><td>碎石共振，金屬設備回響</td></tr>
+          <tr><td>梯井 (S4)</td><td>鐵板鼓面效果（彎曲 + 顫抖 + 轟嗡）</td></tr>
+          <tr><td>機房 (S5)</td><td>油漬黏滯感 + 心跳圓光圈</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== WORLD-BUILDING LIBRARY ==================== -->
+<div class="ref-section" id="worldlib">
+  <div class="ref-header" onclick="toggleRef(this)">
+    <span class="ref-icon">&#9654;</span>
+    世界觀素材庫 World-building Elements Library
+  </div>
+  <div class="ref-body">
+    <table class="data-table">
+      <thead>
+        <tr><th>類別</th><th>元素</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>水</strong></td>
+          <td>雙套管線（蒸氣黃銅 + 柴油鑄鐵）、天花板滴水、積水分層（油光 + 沉底物 + 漂浮物）</td>
+        </tr>
+        <tr>
+          <td><strong>電</strong></td>
+          <td>反映階級 &mdash; 官方殖民配電 &rarr; 有關係的黃銅接口 &rarr; 普通柴油龐克替換 &rarr; 最底層自製廢料</td>
+        </tr>
+        <tr>
+          <td><strong>食物</strong></td>
+          <td>梅林罐頭 / 出前一丁 / 淡奶 = 非正式貨幣。臘腸臘肉鹹魚管線。煲仔爐 + 維他奶 + 陽光茶。LED 種菜（賽博龐克農業）</td>
+        </tr>
+        <tr>
+          <td><strong>信仰</strong></td>
+          <td>土地公「保佑平安」「保佑水管別再爆」、關帝、八卦鏡、門框辟邪物、「開工大吉」紅包、自寫符、LED 蠟燭、碎香爐</td>
+        </tr>
+        <tr>
+          <td><strong>兒童</strong></td>
+          <td>蠟筆塗鴉（高度 80cm = 兒童視角）：高樓 + 蛇管線 + 火柴人 + 太陽。粉筆跳房子。粉筆「阿灰」</td>
+        </tr>
+        <tr>
+          <td><strong>犯罪</strong></td>
+          <td>「鹽 $2 糖 $3」（毒品代碼）、化學瓶 + 燒焦鋁箔（加工點）、被撬保險箱 + 散落身份證、紅色門簾 + 高跟鞋刮痕 + 紫紅色光、紅管幫標記</td>
+        </tr>
+        <tr>
+          <td><strong>殖民建築</strong></td>
+          <td>殖民花磚、「GOVERNMENT PROPERTY &mdash; 政府物業」、鋼印「SEC.7 COL.14」、雙語標示、英式樓層（G/F / 1/F）、三時代配電盤、BIRMINGHAM 銘牌</td>
+        </tr>
+        <tr>
+          <td><strong>通訊</strong></td>
+          <td>自治委員會留言板、噴漆箭頭代碼 + 十字架標記、拆半無線電、蒸氣龐克收音機（木殼 + 黃銅旋鈕 + 真空管）、老祁紙條</td>
+        </tr>
+        <tr>
+          <td><strong>身體磨損</strong></td>
+          <td>欄杆磨亮處、牆面蹭痕、踏板磨損紋路、座位凹陷、菸蒂、黑布鞋朝門口放、油漬手印</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- end main-content -->
 
 <script>
-function toggle(card) { card.classList.toggle('open'); }
-let allOpen = false;
+// Toggle scene section
+function toggleSection(header) {
+  const section = header.parentElement;
+  section.classList.toggle('open');
+}
+
+// Toggle role block
+function toggleRole(header) {
+  const block = header.parentElement;
+  block.classList.toggle('open');
+}
+
+// Toggle reference section
+function toggleRef(header) {
+  const section = header.parentElement;
+  section.classList.toggle('open');
+}
+
+// Toggle all
+let allExpanded = false;
 function toggleAll() {
-  allOpen = !allOpen;
-  document.querySelectorAll('.node-card').forEach(c => {
-    if (allOpen) c.classList.add('open');
-    else c.classList.remove('open');
+  allExpanded = !allExpanded;
+  const btn = document.getElementById('toggleAllBtn');
+  btn.textContent = allExpanded ? '收合全部' : '展開全部';
+
+  document.querySelectorAll('.scene-section, .ref-section').forEach(s => {
+    if (allExpanded) s.classList.add('open');
+    else s.classList.remove('open');
+  });
+
+  document.querySelectorAll('.role-block').forEach(b => {
+    if (allExpanded) b.classList.add('open');
+    else b.classList.remove('open');
   });
 }
+
+// Side nav active state on scroll
+const sections = document.querySelectorAll('.scene-section, .ref-section');
+const navLinks = document.querySelectorAll('.side-nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    if (window.scrollY >= sectionTop - 150) {
+      current = section.id;
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
 </script>
 
 </body>
